@@ -16,10 +16,14 @@ func SetBinglogEnable(url, env, clustername, username string, enable bool) error
 	if err != nil {
 		return err
 	}
-	_, err1 := http.Post(url, "application/json;charset=utf-8", bytes.NewBuffer(str))
+	res, err1 := http.Post(url, "application/json;charset=utf-8", bytes.NewBuffer(str))
 	if err1 != nil {
 		return err1
 	}
+	var r []byte
+	res.Body.Read(r)
+	response := ResponseInfo{}
+	json.Unmarshal(r, &response)
 	return nil
 }
 
