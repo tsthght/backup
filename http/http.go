@@ -3,6 +3,7 @@ package http
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -24,6 +25,7 @@ func SetBinglogEnable(url, env, clustername, username string, enable bool) error
 	res.Body.Read(r)
 	response := ResponseInfo{}
 	json.Unmarshal(r, &response)
+	fmt.Printf("res: %v\n", response)
 	return nil
 }
 
