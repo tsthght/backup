@@ -15,6 +15,7 @@ func SetBinglogEnable(url, env, clustername, username string, enable bool) error
 	}
 
 	str, err := json.Marshal(body)
+	fmt.Printf("request: %s\n", str)
 	if err != nil {
 		return err
 	}
