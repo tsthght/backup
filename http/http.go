@@ -24,6 +24,9 @@ func SetBinglogEnable(url, env, clustername, username string, enable bool) error
 	}
 	s, _ := ioutil.ReadAll(res.Body)
 	fmt.Printf("%v\n", s)
+	response := ResponseInfo{}
+	json.Unmarshal(s, &response)
+	fmt.Printf("res: %v\n", response)
 	return nil
 }
 
