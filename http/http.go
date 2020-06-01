@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -21,11 +22,8 @@ func SetBinglogEnable(url, env, clustername, username string, enable bool) error
 	if err1 != nil {
 		return err1
 	}
-	var r []byte
-	res.Body.Read(r)
-	response := ResponseInfo{}
-	json.Unmarshal(r, &response)
-	fmt.Printf("res: %v\n", response)
+	s, _ := ioutil.ReadAll(res.Body)
+	fmt.Printf("%v\n", s)
 	return nil
 }
 
