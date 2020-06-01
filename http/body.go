@@ -34,7 +34,7 @@ type ContextInfo struct {
 }
 
 type ResponseInfo struct {
-	ctx ContextInfo
+	ctx []byte
 	Message string             `json:"message"`
 	Code int                   `json:"code"`
 	Data string                `json:"data"`

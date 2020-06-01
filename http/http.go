@@ -28,6 +28,9 @@ func SetBinglogEnable(url, env, clustername, username string, enable bool) error
 	response := ResponseInfo{}
 	json.Unmarshal(s, &response)
 	fmt.Printf("res: %v\n", response)
+	ctx := ContextInfo{}
+	json.Unmarshal(response.ctx, &ctx)
+	fmt.Printf("ctx: %v\n", ctx)
 	return nil
 }
 
