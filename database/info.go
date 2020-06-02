@@ -22,3 +22,9 @@ type CPUInfo struct {
 	PhysicCoreNum int
 	Percent string
 }
+
+type MEMInfo struct {
+	TotalSize uint64
+	Available uint64
+	UsedPercent float64
+}

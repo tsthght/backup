@@ -38,11 +38,15 @@ func Status(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *databa
 			if err != nil {
 				continue
 			}
+			mem, err := getMemInfo()
+			if err != nil {
+				continue
+			}
 			db := database.GetMGRConnection(cluster, user, true)
 			if db == nil {
 				fmt.Printf("db is nil")
 			} else {
-				_, err := database.StatusUpdateToCmdb(db, ip, *cpu)
+				_, err := database.StatusUpdateToCmdb(db, ip, *cpu, *mem)
 				if err != nil {
 					fmt.Printf("status failed: %s", err.Error())
 				}
