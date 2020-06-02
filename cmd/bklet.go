@@ -39,6 +39,15 @@ func main() {
 
 	//启动任务
 	db := database.GetMGRConnection(&mgrinfo, userinfo, true)
+	if db == nil {
+		fmt.Printf("db is nil\n")
+		return
+	}
+	num, err := database.RegisterToCmdb(db, "32")
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
+	}
+	fmt.Printf("num: %d\n", num)
 	if db != nil {
 		db.Close()
 	}
