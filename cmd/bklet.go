@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/tsthght/backup/args"
@@ -30,6 +31,11 @@ func main() {
 		Database: conf.Cmdb.Database,
 	}
 	fmt.Printf("%v\n", userinfo)
+	mgrinfo := database.MGRInfo{
+		Hosts:      strings.Split(conf.Cmdb.Host, ","),
+		WriteIndex: 0,
+	}
+	fmt.Printf("%v\n", mgrinfo)
 
 	//启动任务
 

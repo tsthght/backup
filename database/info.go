@@ -2,7 +2,6 @@ package database
 
 type MGRInfo struct {
 	Hosts []string
-	Port int
 	WriteIndex int
 }
 
