@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	register_sql = "replace into bk_machine_info (ip) values (?)"
+	register_sql = "insert into bk_machine_info (ip) values (?) on duplicate key update update_time = now()"
 	status_sql = "replace into bk_machine_info(ip, cpu_physic_core_num, cpu_logic_core_num, cpu_percent) values (?, ?, ?, ?)"
 )
 
