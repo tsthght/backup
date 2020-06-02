@@ -23,6 +23,9 @@ func Register(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *data
 			continue
 		}
 		ip = info.HostID
+		if len(ip) > 0 {
+			break
+		}
 	}
 
 	for {
