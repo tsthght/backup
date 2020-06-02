@@ -23,6 +23,8 @@ func main() {
 
 
 	//启动任务
+
+
 	/*
 	err := http.SetBinglogEnable(
 		"http://xxxxxx:8000/api/v1/cluster/conf_cluster_binlog",
