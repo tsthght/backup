@@ -57,11 +57,13 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 		fmt.Printf("pu: %s, cu: %s\n", pu, cu)
 		if len(pu) == 0 {
 			err, pu = getPrimaryUUID(db)
+			fmt.Printf("get pu: %s\n", pu)
 			if err != nil {
 				continue
 			}
 		}
 		err, cu = getCurrentUUID(db)
+		fmt.Printf("get cu: %s\n", cu)
 		if strings.EqualFold(pu, cu) {
 			cluster.WriteIndex = index
 			return db
