@@ -38,7 +38,7 @@ func main() {
 	fmt.Printf("%v\n", mgrinfo)
 
 	//启动任务
-	db := database.GetMGRConnection(&mgrinfo, userinfo, false)
+	db := database.GetMGRConnection(&mgrinfo, userinfo, true)
 	if db != nil {
 		db.Close()
 	}

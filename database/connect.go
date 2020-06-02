@@ -54,6 +54,7 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 		ip := ips[index/l]
 		ref := strings.Join([]string{userinfo.Username, ":", userinfo.Password, "@tcp(",ip, ":", userinfo.Port, ")/", userinfo.Database, "?charset=utf8"}, "")
 		db, _ := sql.Open("mysql", ref)
+		fmt.Printf("pu: %s, cu: %s\n", pu, cu)
 		if len(pu) == 0 {
 			err, pu = getPrimaryUUID(db)
 			if err != nil {
