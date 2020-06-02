@@ -51,7 +51,7 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 	var err error
 	var pu, cu string
 	for i := 0; i< l; i++ {
-		ip := ips[index/l]
+		ip := ips[index%l]
 		ref := strings.Join([]string{userinfo.Username, ":", userinfo.Password, "@tcp(",ip, ":", userinfo.Port, ")/", userinfo.Database, "?charset=utf8"}, "")
 		db, _ := sql.Open("mysql", ref)
 		fmt.Printf("pu: %s, cu: %s\n", pu, cu)
@@ -59,6 +59,7 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 			err, pu = getPrimaryUUID(db)
 			fmt.Printf("get pu: %s\n", pu)
 			if err != nil {
+				index ++
 				continue
 			}
 		}
@@ -66,6 +67,7 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 		fmt.Printf("get cu: %s\n", cu)
 		if strings.EqualFold(pu, cu) {
 			cluster.WriteIndex = index
+			fmt.Printf("get primary node\n")
 			return db
 		}
 		index ++
