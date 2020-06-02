@@ -7,7 +7,7 @@ import (
 
 const (
 	register_sql = "replace into bk_machine_info (ip) values (?)"
-	status_sql = "replace into bk_machine_info(cpu_physic_core_num, cpu_logic_core_num, cpu_percent) values (?, ?, ?)"
+	status_sql = "replace into bk_machine_info(ip, cpu_physic_core_num, cpu_logic_core_num, cpu_percent) values (?, ?, ?, ?)"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
