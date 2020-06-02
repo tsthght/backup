@@ -27,7 +27,9 @@ func getCPUInfo() (info *database.CPUInfo, err error) {
 		}
 	}
 	p, err := cpu.Percent(time.Duration(time.Second), false)
-	return &cpuinfo, nil
+	if err != nil {
+		return nil, err
+	}
 	for _, v := range p {
 		cpuinfo.Percent += fmt.Sprintf("%f ", v)
 	}
