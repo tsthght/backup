@@ -10,8 +10,10 @@ type API struct {
 type CMDB struct {
 	Appkey string                `toml:"appkey" json:"appkey"`
 	Username string              `toml:"username" json:"username"`
+	Password string              `toml:"password" json:"password"`
 	Port int                     `toml:"cmdb_port" json:"cmdb_port"`
 	Host string                  `toml:"cmdb_host" json:"cmdb_host"`
+	Database string              `toml:"cmdb_db" json:"cmdb_db"`
 }
 
 type BkConfig struct {

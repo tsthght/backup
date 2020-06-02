@@ -6,6 +6,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/tsthght/backup/args"
 	"github.com/tsthght/backup/config"
+	"github.com/tsthght/backup/database"
 	"github.com/tsthght/backup/secret"
 )
 
@@ -21,11 +22,16 @@ func main() {
 	}
 	fmt.Printf("%v\n", conf)
 	//参数转化
-
+	userinfo := database.UserInfo{
+		Username: secret.GetValueByeKey(conf.Cmdb.Appkey, conf.Cmdb.Username),
+		Password: secret.GetValueByeKey(conf.Cmdb.Appkey, conf.Cmdb.Password),
+		Port:     string(conf.Cmdb.Port),
+		Database: conf.Cmdb.Database,
+	}
+	fmt.Printf("%v\n", userinfo)
 
 	//启动任务
-	username := secret.GetValueByeKey(conf.Cmdb.Appkey, conf.Cmdb.Username)
-	fmt.Printf("username: %s\n", username)
+
 	/*
 	err := http.SetBinglogEnable(
 		"http://xxxxxx:8000/api/v1/cluster/conf_cluster_binlog",
