@@ -1,12 +1,14 @@
 package status
 
 import (
+	"fmt"
 	"sync"
 	"time"
-	"fmt"
+
+	"github.com/tsthght/backup/database"
 )
 
-func Status(quit <-chan time.Time, wg *sync.WaitGroup, rate int) {
+func Status(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database.MGRInfo, user database.UserInfo) {
 	defer wg.Done()
 
 	checkTick := time.NewTicker(time.Duration(rate) * time.Millisecond)
@@ -17,7 +19,7 @@ func Status(quit <-chan time.Time, wg *sync.WaitGroup, rate int) {
 			fmt.Printf("cancel goroutine by channel")
 			return
 		case <- checkTick.C:
-			fmt.Printf("do sth.\n")
+
 		}
 	}
 }

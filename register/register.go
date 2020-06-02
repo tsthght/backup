@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/shirou/gopsutil/host"
 	"github.com/tsthght/backup/database"
-	"github.com/tsthght/backup/utils"
 )
 
 func Register(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database.MGRInfo, user database.UserInfo) {
@@ -17,13 +17,12 @@ func Register(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *data
 
 	var ip string
 	for {
-		var err error
-		err, ip = utils.GetLocalIP()
+		info, err := host.Info()
 		if err != nil {
 			time.Sleep(1 * time.Second)
-		} else {
-			break
+			continue
 		}
+		ip = info.HostID
 	}
 
 	for {
