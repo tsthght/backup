@@ -3,8 +3,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-
-	"github.com/tsthght/backup/status"
 )
 
 const (
@@ -31,7 +29,7 @@ func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
 	return res.RowsAffected()
 }
 
-func StatusUpdateToCmdb(db *sql.DB, ip string, info status.CPUInfo) (int64, error) {
+func StatusUpdateToCmdb(db *sql.DB, ip string, info CPUInfo) (int64, error) {
 	tx, err := db.Begin()
 	if err != nil {
 		return 0, errors.New("tx Begin failed")

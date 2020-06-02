@@ -5,17 +5,14 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/tsthght/backup/database"
 )
 
-type CPUInfo struct {
-	LogicCoreNum int
-	PhysicCoreNum int
-	Percent string
-}
 
-var cpuinfo CPUInfo
 
-func getCPUInfo() (info *CPUInfo, err error) {
+var cpuinfo database.CPUInfo
+
+func getCPUInfo() (info *database.CPUInfo, err error) {
 	cpuinfo.Percent = ""
 	if cpuinfo.PhysicCoreNum == 0 {
 		cpuinfo.PhysicCoreNum, err = cpu.Counts(false)

@@ -16,3 +16,9 @@ type UserInfo struct {
 	Port string
 	Database string
 }
+
+type CPUInfo struct {
+	LogicCoreNum int
+	PhysicCoreNum int
+	Percent string
+}
