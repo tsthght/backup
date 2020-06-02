@@ -26,7 +26,7 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 	if !writenode {
 		index := rand.Intn(l - 1)
 		for i := 0; i < l; i++ {
-			ip := ips[index/l]
+			ip := ips[index%l]
 			ref := strings.Join([]string{userinfo.Username, ":", userinfo.Password, "@tcp(",ip, ":", userinfo.Port, ")/", userinfo.Database, "?charset=utf8"}, "")
 			db, _ := sql.Open("mysql", ref)
 			if db == nil {
