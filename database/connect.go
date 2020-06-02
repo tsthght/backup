@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"math/rand"
 	"strings"
 )
@@ -29,6 +30,7 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 			if err := db.Ping(); err != nil {
 				continue
 			} else {
+				fmt.Printf("ref: %v\n", ref)
 				return db
 			}
 			index ++

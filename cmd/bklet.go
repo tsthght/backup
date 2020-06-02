@@ -38,7 +38,8 @@ func main() {
 	fmt.Printf("%v\n", mgrinfo)
 
 	//启动任务
-
+	db := database.GetMGRConnection(&mgrinfo, userinfo, false)
+	db.Close()
 	/*
 	err := http.SetBinglogEnable(
 		"http://xxxxxx:8000/api/v1/cluster/conf_cluster_binlog",
