@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
