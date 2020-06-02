@@ -16,10 +16,12 @@ func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
 	}
 	stmt, err := tx.Prepare(register_sql)
 	if err != nil {
+		tx.Rollback()
 		return 0, errors.New("tx Prepare failed")
 	}
 	res, err := stmt.Exec(ip)
 	if err != nil {
+		tx.Rollback()
 		return 0, errors.New("tx Exec failed")
 	}
 	tx.Commit()
