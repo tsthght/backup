@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/tsthght/backup/args"
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
+	"github.com/tsthght/backup/register"
 	"github.com/tsthght/backup/secret"
 )
 
@@ -63,12 +66,11 @@ func main() {
 	err.Error()
 
 	 */
-	/*
+
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	quit := make(chan time.Time)
-	go register.Register(quit, &wg, 1000)
+	go register.Register(quit, &wg, 1000, &mgrinfo, userinfo)
 	wg.Wait()
 
-	 */
 }
