@@ -29,15 +29,16 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 			db, _ := sql.Open("mysql", ref)
 			if db == nil {
 				fmt.Printf("open db connection failed, ref: %s\n", ref)
+				index ++
 				continue
 			}
 			if err := db.Ping(); err != nil {
+				index ++
 				continue
 			} else {
 				fmt.Printf("ref: %v\n", ref)
 				return db
 			}
-			index ++
 		}
 		return nil
 	}
