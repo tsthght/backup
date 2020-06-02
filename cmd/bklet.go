@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/BurntSushi/toml"
 	"github.com/tsthght/backup/args"
@@ -25,7 +26,7 @@ func main() {
 	userinfo := database.UserInfo{
 		Username: secret.GetValueByeKey(conf.Cmdb.Appkey, conf.Cmdb.Username),
 		Password: secret.GetValueByeKey(conf.Cmdb.Appkey, conf.Cmdb.Password),
-		Port:     string(conf.Cmdb.Port),
+		Port:     strconv.Itoa(conf.Cmdb.Port),
 		Database: conf.Cmdb.Database,
 	}
 	fmt.Printf("%v\n", userinfo)
