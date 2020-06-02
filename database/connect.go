@@ -54,20 +54,16 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 		ip := ips[index%l]
 		ref := strings.Join([]string{userinfo.Username, ":", userinfo.Password, "@tcp(",ip, ":", userinfo.Port, ")/", userinfo.Database, "?charset=utf8"}, "")
 		db, _ := sql.Open("mysql", ref)
-		fmt.Printf("pu: %s, cu: %s\n", pu, cu)
 		if len(pu) == 0 {
 			err, pu = getPrimaryUUID(db)
-			fmt.Printf("get pu: %s\n", pu)
 			if err != nil {
 				index ++
 				continue
 			}
 		}
 		err, cu = getCurrentUUID(db)
-		fmt.Printf("get cu: %s\n", cu)
 		if strings.EqualFold(pu, cu) {
 			cluster.WriteIndex = index
-			fmt.Printf("get primary node\n")
 			return db
 		}
 		index ++
