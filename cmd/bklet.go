@@ -44,7 +44,9 @@ func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	quit := make(chan time.Time)
-	go register.Register(quit, &wg, 1000, &mgrinfo, userinfo)
+
+	//keepalive 5s
+	go register.Register(quit, &wg, 5000, &mgrinfo, userinfo)
 	wg.Wait()
 
 	/*
