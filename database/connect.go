@@ -27,6 +27,10 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 			ip := ips[index/l]
 			ref := strings.Join([]string{userinfo.Username, ":", userinfo.Password, "@tcp(",ip, ":", userinfo.Port, ")/", userinfo.Database, "?charset=utf8"}, "")
 			db, _ := sql.Open("mysql", ref)
+			if db == nil {
+				fmt.Printf("open db connection failed\n")
+				continue
+			}
 			if err := db.Ping(); err != nil {
 				continue
 			} else {
