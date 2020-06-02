@@ -51,7 +51,7 @@ func main() {
 
 	//status 3s
 	wg.Add(1)
-	go status.Status(quit, &wg, 3000, &mgrinfo, userinfo)
+	go status.Status(quit, &wg, 3000, &mgrinfo, userinfo, conf.Task.Path)
 
 	wg.Wait()
 	/*

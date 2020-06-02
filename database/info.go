@@ -28,3 +28,9 @@ type MEMInfo struct {
 	Available uint64
 	UsedPercent float64
 }
+
+type DiskInfo struct {
+	TotalSize uint64
+	Free uint64
+	UsedPercent float64
+}

@@ -9,7 +9,7 @@ import (
 	"github.com/tsthght/backup/utils"
 )
 
-func Status(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database.MGRInfo, user database.UserInfo) {
+func Status(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database.MGRInfo, user database.UserInfo, path string) {
 	defer wg.Done()
 
 	checkTick := time.NewTicker(time.Duration(rate) * time.Millisecond)
@@ -42,11 +42,15 @@ func Status(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *databa
 			if err != nil {
 				continue
 			}
+			dsk, err := getDiskInfo(path)
+			if err != nil {
+				continue
+			}
 			db := database.GetMGRConnection(cluster, user, true)
 			if db == nil {
 				fmt.Printf("db is nil")
 			} else {
-				_, err := database.StatusUpdateToCmdb(db, ip, *cpu, *mem)
+				_, err := database.StatusUpdateToCmdb(db, ip, *cpu, *mem, *dsk, path)
 				if err != nil {
 					fmt.Printf("status failed: %s", err.Error())
 				}

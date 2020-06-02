@@ -16,7 +16,12 @@ type CMDB struct {
 	Database string              `toml:"cmdb_db" json:"cmdb_db"`
 }
 
+type TASK struct {
+	Path string
+}
+
 type BkConfig struct {
 	Api API
 	Cmdb CMDB
+	Task TASK
 }
