@@ -4,13 +4,16 @@ import (
 	"fmt"
 
 	"github.com/BurntSushi/toml"
+	"github.com/tsthght/backup/args"
 	"github.com/tsthght/backup/config"
 )
 
 func main() {
-	fmt.Printf("i am bklet\n")
+	arg := args.Arguments{}
+	args.InitArgs(&arg)
+	fmt.Printf("cfg = %s\n", *arg.Cfg)
 	var conf config.BkConfig
-	if _, err := toml.DecodeFile("../config/config.toml", &conf); err != nil {
+	if _, err := toml.DecodeFile(*arg.Cfg, &conf); err != nil {
 		fmt.Printf("error\n")
 	}
 	fmt.Printf("## %v\n", conf)
