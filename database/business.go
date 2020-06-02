@@ -25,3 +25,8 @@ func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
 	tx.Commit()
 	return res.RowsAffected()
 }
+
+func UnRegisterToCmdb(db *sql.DB, ip string) (int64, error) {
+	//do nothing
+	return 0, nil
+}
