@@ -6,6 +6,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/tsthght/backup/args"
 	"github.com/tsthght/backup/config"
+	"github.com/tsthght/backup/secret"
 )
 
 func main() {
@@ -23,8 +24,8 @@ func main() {
 
 
 	//启动任务
-
-
+	username := secret.GetValueByeKey(conf.Cmdb.Appkey, conf.Cmdb.Username)
+	fmt.Printf("username: %s\n", username)
 	/*
 	err := http.SetBinglogEnable(
 		"http://xxxxxx:8000/api/v1/cluster/conf_cluster_binlog",
