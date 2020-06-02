@@ -8,13 +8,14 @@ import (
 
 func main() {
 	fmt.Printf("i am bklet")
-	http.SetBinglogEnable(
+	err := http.SetBinglogEnable(
 		"http://xxxxxx:8000/api/v1/cluster/conf_cluster_binlog",
 		"product",
 		"inf_blade_multiidc",
-		"xxxx",
+		"ght",
 		true,
 		)
+	err.Error()
 	/*
 	wg := sync.WaitGroup{}
 	wg.Add(1)
