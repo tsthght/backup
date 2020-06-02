@@ -23,5 +23,5 @@ func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
 		return 0, errors.New("tx Exec failed")
 	}
 	tx.Commit()
-	return res.LastInsertId()
+	return res.RowsAffected()
 }
