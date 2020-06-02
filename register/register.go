@@ -20,7 +20,7 @@ func Register(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *data
 		var err error
 		err, ip = utils.GetLocalIP()
 		if err != nil {
-			time.Sleep(1 * time.Second)
+			time.Sleep(2 * time.Second)
 			continue
 		}
 		if len(ip) > 0 {

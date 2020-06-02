@@ -13,6 +13,7 @@ import (
 	"github.com/tsthght/backup/database"
 	"github.com/tsthght/backup/register"
 	"github.com/tsthght/backup/secret"
+	"github.com/tsthght/backup/status"
 )
 
 func main() {
@@ -42,13 +43,17 @@ func main() {
 
 	//启动任务
 	wg := sync.WaitGroup{}
-	wg.Add(1)
 	quit := make(chan time.Time)
 
 	//keepalive 5s
+	wg.Add(1)
 	go register.Register(quit, &wg, 5000, &mgrinfo, userinfo)
-	wg.Wait()
 
+	//status 3s
+	wg.Add(1)
+	go status.Status(quit, &wg, 3000, &mgrinfo, userinfo)
+
+	wg.Wait()
 	/*
 	err := http.SetBinglogEnable(
 		"http://xxxxxx:8000/api/v1/cluster/conf_cluster_binlog",
