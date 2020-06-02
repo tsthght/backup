@@ -7,7 +7,7 @@ import (
 
 const (
 	register_sql = "insert into bk_machine_info (ip) values (?) on duplicate key update update_time = now()"
-	status_sql = "insert into bk_machine_info( ip, " +
+	status_sql = "replace into bk_machine_info( ip, " +
 		"cpu_physic_core_num, cpu_logic_core_num, cpu_percent," +
 		"mem_total, mem_used, mem_used_percent, " +
 		"disk_path, disk_total, disk_free, disk_used_percent) values (?,   ?, ?, ?,    ?, ?, ?   ,?, ?, ?, ?)"
