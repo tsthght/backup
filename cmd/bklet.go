@@ -3,11 +3,18 @@ package main
 import (
 	"fmt"
 
-	"github.com/tsthght/backup/http"
+	"github.com/BurntSushi/toml"
+	"github.com/tsthght/backup/config"
 )
 
 func main() {
-	fmt.Printf("i am bklet")
+	fmt.Printf("i am bklet\n")
+	var conf config.BkConfig
+	if _, err := toml.DecodeFile("../config/config.toml", &conf); err != nil {
+		fmt.Printf("error\n")
+	}
+	fmt.Printf("## %v\n", conf)
+	/*
 	err := http.SetBinglogEnable(
 		"http://xxxxxx:8000/api/v1/cluster/conf_cluster_binlog",
 		"product",
@@ -16,6 +23,8 @@ func main() {
 		true,
 		)
 	err.Error()
+
+	 */
 	/*
 	wg := sync.WaitGroup{}
 	wg.Add(1)

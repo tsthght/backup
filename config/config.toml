@@ -5,6 +5,6 @@ config_drainer = "http://xxxxxx:8000/api/v1/cluster/conf_cluster_drainer"
 config_restart = "http://xxxxxx:8000/api/v1/cluster/conf_cluster_restart"
 [cmdb]
 appkey = "com.xxx.xxx.xxx.resource"
-username="abc"
-port = 5002
-ip = "1.1.1.1,2.2.2.2,3.3.3.3"
+username = "abc"
+cmdb_port = 5002
+cmdb_host = "1.1.1.1,2.2.2.2,3.3.3.3"
