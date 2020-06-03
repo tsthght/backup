@@ -58,7 +58,8 @@ func AssignTask(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *da
 			if db == nil {
 				fmt.Printf("db is nil")
 			} else {
-				_, err := database.AssignFromCmdb(db, ip)
+				uuid, err := database.AssignFromCmdb(db, ip)
+				fmt.Printf("###### uuid=%d\n", uuid)
 				if err != nil {
 					fmt.Printf("assign failed: %s", err.Error())
 				}
