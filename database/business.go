@@ -14,7 +14,7 @@ const (
 		"where ip = ?"
 	getTask_sql = "select uuid from bk_task_info where state = 'todo' order by priority desc, uuid desc limit 1 for update"
 	assignTask_sql = "update bk_machine_info set task_id = ?, stage = 'todo' where ip = ?"
-	getStatus_sql = "select state from bk_machine_info where ip = ?"
+	getStatus_sql = "select stage from bk_machine_info where ip = ?"
 	doingTask_ssql = "update bk_task_info set state = 'doing' where uuid = ?"
 )
 
