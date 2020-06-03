@@ -78,12 +78,12 @@ func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 	rows.Close()
 
 	stmt, err := tx.Prepare(assignTask_sql)
-	fmt.Printf("assign %s\n", ip)
 	if err != nil {
 		tx.Rollback()
 		return 0, errors.New("tx Prepare failed")
 	}
 	res, err := stmt.Exec(uuid, ip)
+	fmt.Printf("assign to:  %d, %s\n", uuid, ip)
 	if err != nil {
 		tx.Rollback()
 		return 0, errors.New("tx Exec failed")
