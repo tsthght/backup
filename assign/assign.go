@@ -1,6 +1,7 @@
 package assign
 
 import (
+	"math/rand"
 	"strings"
 	"sync"
 	"time"
@@ -35,6 +36,7 @@ func AssignTask(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *da
 			fmt.Printf("cancel goroutine by channel")
 			return
 		case <- checkTick.C:
+			time.Sleep(time.Duration(rand.Intn(500)) * time.Millisecond)
 			//查看自己的状态
 			db1 := database.GetMGRConnection(cluster, user, false)
 			if db1 == nil {
