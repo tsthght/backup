@@ -6,7 +6,6 @@ import (
 	"time"
 	"fmt"
 
-	"github.com/pingcap/tidb-tools/pkg/dbutil"
 	"github.com/tsthght/backup/database"
 	"github.com/tsthght/backup/utils"
 )
