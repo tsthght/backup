@@ -24,17 +24,17 @@ const (
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return 0, errors.New("tx Begin failed")
+		return 0, errors.New("call RegisterToCmdb: tx Begin failed")
 	}
 	stmt, err := tx.Prepare(register_sql)
 	if err != nil {
 		tx.Rollback()
-		return 0, errors.New("tx Prepare failed")
+		return 0, errors.New("call RegisterToCmdb: tx Prepare failed")
 	}
 	res, err := stmt.Exec(ip)
 	if err != nil {
 		tx.Rollback()
-		return 0, errors.New("tx Exec failed")
+		return 0, errors.New("call RegisterToCmdb: tx Exec failed")
 	}
 	tx.Commit()
 	return res.RowsAffected()
@@ -43,19 +43,19 @@ func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
 func StatusUpdateToCmdb(db *sql.DB, ip string, info CPUInfo, mem MEMInfo, dsk DiskInfo, path string) (int64, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return 0, errors.New("tx Begin failed")
+		return 0, errors.New("call RegisterToCmdb: tx Begin failed")
 	}
 	stmt, err := tx.Prepare(status_sql)
 	if err != nil {
 		tx.Rollback()
-		return 0, errors.New("tx Prepare failed")
+		return 0, errors.New("call RegisterToCmdb: tx Prepare failed")
 	}
 	res, err := stmt.Exec(ip, info.PhysicCoreNum, info.LogicCoreNum, info.Percent,
 		mem.TotalSize, mem.Available, mem.UsedPercent,
 		path, dsk.TotalSize, dsk.Free, dsk.UsedPercent)
 	if err != nil {
 		tx.Rollback()
-		return 0, errors.New("tx Exec failed")
+		return 0, errors.New("call RegisterToCmdb: tx Exec failed")
 	}
 	tx.Commit()
 	return res.RowsAffected()
@@ -64,11 +64,11 @@ func StatusUpdateToCmdb(db *sql.DB, ip string, info CPUInfo, mem MEMInfo, dsk Di
 func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return 0, errors.New("tx Begin failed")
+		return 0, errors.New("call AssignFromCmdb: tx Begin failed")
 	}
 	rows, err := tx.Query(getTask_sql)
 	if err != nil {
-		return 0, errors.New("tx query failed")
+		return 0, errors.New("call AssignFromCmdb: tx query failed")
 	}
 	uuid := -1
 	for rows.Next() {
@@ -76,7 +76,7 @@ func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 		if err != nil {
 			rows.Close()
 			tx.Rollback()
-			return 0, errors.New("tx scan failed")
+			return 0, errors.New("call AssignFromCmdb: tx scan failed")
 		}
 		break
 	}
@@ -85,13 +85,13 @@ func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 	stmt, err := tx.Prepare(assignTask_sql)
 	if err != nil {
 		tx.Rollback()
-		return 0, errors.New("tx Prepare failed")
+		return 0, errors.New("call AssignFromCmdb: tx Prepare failed")
 	}
 	res, err := stmt.Exec(uuid, ip)
 	fmt.Printf("assign to:  %d, %s\n", uuid, ip)
 	if err != nil {
 		tx.Rollback()
-		return 0, errors.New("tx Exec failed")
+		return 0, errors.New("call AssignFromCmdb: tx Exec failed")
 	}
 
 
@@ -102,15 +102,15 @@ func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 func GetStatusFromCmdb(db *sql.DB, ip string) (string, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return "", errors.New("tx Begin failed: " + err.Error())
+		return "", errors.New("call GetStatusFromCmdb: tx Begin failed: " + err.Error())
 	}
 	if err != nil {
 		tx.Rollback()
-		return "", errors.New("tx Prepare failed:" + err.Error())
+		return "", errors.New("call GetStatusFromCmdb: tx Prepare failed:" + err.Error())
 	}
 	rows, err := tx.Query(getStatus_sql, ip)
 	if err != nil {
-		return "", errors.New("tx query failed:" + err.Error())
+		return "", errors.New("call GetStatusFromCmdb: tx query failed:" + err.Error())
 	}
 	stage := ""
 	for rows.Next() {
@@ -118,7 +118,7 @@ func GetStatusFromCmdb(db *sql.DB, ip string) (string, error) {
 		if err != nil {
 			rows.Close()
 			tx.Rollback()
-			return "", errors.New("tx scan failed:" + err.Error())
+			return "", errors.New("call GetStatusFromCmdb: tx scan failed:" + err.Error())
 		}
 		rows.Close()
 		break
