@@ -9,6 +9,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/tsthght/backup/args"
+	"github.com/tsthght/backup/assign"
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
 	"github.com/tsthght/backup/register"
@@ -45,13 +46,17 @@ func main() {
 	wg := sync.WaitGroup{}
 	quit := make(chan time.Time)
 
-	//keepalive 5s
+	//keepalive 7s
 	wg.Add(1)
-	go register.Register(quit, &wg, 5000, &mgrinfo, userinfo)
+	go register.Register(quit, &wg, 7000, &mgrinfo, userinfo)
 
-	//status 3s
+	//status 5s
 	wg.Add(1)
-	go status.Status(quit, &wg, 3000, &mgrinfo, userinfo, conf.Task.Path)
+	go status.Status(quit, &wg, 5000, &mgrinfo, userinfo, conf.Task.Path)
+
+	//assign 3s
+	wg.Add(1)
+	go assign.AssignTask(quit, &wg, 3000, &mgrinfo, userinfo)
 
 	wg.Wait()
 	/*
