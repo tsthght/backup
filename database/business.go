@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 )
 
 const (
@@ -77,6 +78,7 @@ func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 	rows.Close()
 
 	stmt, err := tx.Prepare(assignTask_sql)
+	fmt.Printf("assign %s\n", ip)
 	if err != nil {
 		tx.Rollback()
 		return 0, errors.New("tx Prepare failed")
