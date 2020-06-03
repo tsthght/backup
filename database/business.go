@@ -98,15 +98,15 @@ func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 func GetStatusFromCmdb(db *sql.DB, ip string) (string, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return "", errors.New("tx Begin failed")
+		return "", errors.New("tx Begin failed: " + err.Error())
 	}
 	if err != nil {
 		tx.Rollback()
-		return "", errors.New("tx Prepare failed")
+		return "", errors.New("tx Prepare failed:" + err.Error())
 	}
 	rows, err := tx.Query(ip)
 	if err != nil {
-		return "", errors.New("tx query failed")
+		return "", errors.New("tx query failed:" + err.Error())
 	}
 	stage := ""
 	for rows.Next() {
@@ -114,7 +114,7 @@ func GetStatusFromCmdb(db *sql.DB, ip string) (string, error) {
 		if err != nil {
 			rows.Close()
 			tx.Rollback()
-			return "", errors.New("tx scan failed")
+			return "", errors.New("tx scan failed:" + err.Error())
 		}
 		rows.Close()
 		break
