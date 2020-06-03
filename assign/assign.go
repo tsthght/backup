@@ -46,10 +46,12 @@ func AssignTask(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *da
 				}
 				fmt.Printf("## %s\n", stage)
 				if !strings.EqualFold("idle", stage) {
+					db1.Close()
 					continue
 				}
 				db1.Close()
 			}
+			fmt.Printf("##########\n")
 
 			//获取任务（state：todo ），更新（update）状态
 			db := database.GetMGRConnection(cluster, user, true)
