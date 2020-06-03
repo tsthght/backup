@@ -76,12 +76,15 @@ func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 			return 0, errors.New("call AssignFromCmdb: tx scan failed")
 		}
 		if uuid == -1 {
+			rows.Close()
+			tx.Commit()
 			return uuid, nil
 		}
 		break
 	}
 	rows.Close()
 	if uuid == -1 {
+		tx.Commit()
 		return uuid, nil
 	}
 
