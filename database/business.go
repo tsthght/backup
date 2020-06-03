@@ -43,19 +43,19 @@ func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
 func StatusUpdateToCmdb(db *sql.DB, ip string, info CPUInfo, mem MEMInfo, dsk DiskInfo, path string) (int64, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return 0, errors.New("call RegisterToCmdb: tx Begin failed")
+		return 0, errors.New("call StatusUpdateToCmdb: tx Begin failed: " + err.Error())
 	}
 	stmt, err := tx.Prepare(status_sql)
 	if err != nil {
 		tx.Rollback()
-		return 0, errors.New("call RegisterToCmdb: tx Prepare failed")
+		return 0, errors.New("call StatusUpdateToCmdb: tx Prepare failed: " + err.Error())
 	}
 	res, err := stmt.Exec(ip, info.PhysicCoreNum, info.LogicCoreNum, info.Percent,
 		mem.TotalSize, mem.Available, mem.UsedPercent,
 		path, dsk.TotalSize, dsk.Free, dsk.UsedPercent)
 	if err != nil {
 		tx.Rollback()
-		return 0, errors.New("call RegisterToCmdb: tx Exec failed")
+		return 0, errors.New("call StatusUpdateToCmdb: tx Exec failed: " + err.Error())
 	}
 	tx.Commit()
 	return res.RowsAffected()
