@@ -15,6 +15,7 @@ import (
 	"github.com/tsthght/backup/register"
 	"github.com/tsthght/backup/secret"
 	"github.com/tsthght/backup/status"
+	"github.com/tsthght/backup/task"
 )
 
 func main() {
@@ -57,6 +58,10 @@ func main() {
 	//assign 3s
 	wg.Add(1)
 	go assign.AssignTask(quit, &wg, 3000, &mgrinfo, userinfo)
+
+	//task 5s
+	wg.Add(1)
+	go task.Task(quit, &wg, 5000)
 
 	wg.Wait()
 	/*
