@@ -51,15 +51,13 @@ func AssignTask(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *da
 				}
 				db1.Close()
 			}
-			fmt.Printf("##########\n")
 
 			//获取任务（state：todo ），更新（update）状态
 			db := database.GetMGRConnection(cluster, user, true)
 			if db == nil {
 				fmt.Printf("db is nil")
 			} else {
-				uuid, err := database.AssignFromCmdb(db, ip)
-				fmt.Printf("###### uuid=%d\n", uuid)
+				_, err := database.AssignFromCmdb(db, ip)
 				if err != nil {
 					fmt.Printf("assign failed: %s", err.Error())
 				}
