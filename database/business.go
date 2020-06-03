@@ -73,6 +73,7 @@ func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 		}
 		break
 	}
+	rows.Close()
 	fmt.Printf("## uuid: %d\n", uuid)
 	/*
 	stmt, err := tx.Prepare(getTask_sql)
