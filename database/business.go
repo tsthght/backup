@@ -24,7 +24,7 @@ const (
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return 0, errors.New("call RegisterToCmdb: tx Begin failed")
+		return 0, errors.New("call RegisterToCmdb: tx Begin failed: " + err.Error())
 	}
 	stmt, err := tx.Prepare(register_sql)
 	if err != nil {
@@ -34,7 +34,7 @@ func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
 	res, err := stmt.Exec(ip)
 	if err != nil {
 		tx.Rollback()
-		return 0, errors.New("call RegisterToCmdb: tx Exec failed")
+		return 0, errors.New("call RegisterToCmdb: tx Exec failed: " + err.Error())
 	}
 	tx.Commit()
 	return res.RowsAffected()
