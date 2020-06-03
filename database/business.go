@@ -13,7 +13,7 @@ const (
 		"mem_total, mem_used, mem_used_percent, " +
 		"disk_path, disk_total, disk_free, disk_used_percent) values (?,   ?, ?, ?,    ?, ?, ?   ,?, ?, ?, ?)"
 	getTask_sql = "select uuid from bk_task_info where state = 'todo' order by priority desc, uuid desc limit 1 for update"
-	assignTask_sql = "update bk_machine_info set task_id = ? and stage = 'todo' where ip = ?"
+	assignTask_sql = "update bk_machine_info set task_id = ?, stage = 'todo' where ip = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
