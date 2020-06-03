@@ -47,9 +47,9 @@ func StatusUpdateToCmdb(db *sql.DB, ip string, info CPUInfo, mem MEMInfo, dsk Di
 		tx.Rollback()
 		return 0, errors.New("call StatusUpdateToCmdb: tx Prepare failed: " + err.Error())
 	}
-	res, err := stmt.Exec(ip, info.PhysicCoreNum, info.LogicCoreNum, info.Percent,
+	res, err := stmt.Exec(info.PhysicCoreNum, info.LogicCoreNum, info.Percent,
 		mem.TotalSize, mem.Available, mem.UsedPercent,
-		path, dsk.TotalSize, dsk.Free, dsk.UsedPercent)
+		path, dsk.TotalSize, dsk.Free, dsk.UsedPercent, ip)
 	if err != nil {
 		tx.Rollback()
 		return 0, errors.New("call StatusUpdateToCmdb: tx Exec failed: " + err.Error())
