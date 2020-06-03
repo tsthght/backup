@@ -84,8 +84,10 @@ func getPrimaryUUID(db *sql.DB) (error, string) {
 		Value := ""
 		err := rows.Scan(&Variable_name, &Value)
 		if err != nil {
+			rows.Close()
 			return err, ""
 		}
+		rows.Close()
 		return nil, Value
 	}
 	return errors.New("unexpected error when call GetPrimaryUUID"), ""
@@ -101,8 +103,10 @@ func getCurrentUUID(db *sql.DB) (error, string) {
 		Value := ""
 		err := rows.Scan(&Variable_name, &Value)
 		if err != nil {
+			rows.Close()
 			return err, ""
 		}
+		rows.Close()
 		return nil, Value
 	}
 	return errors.New("unexpected error when call GetPrimaryUUID"), ""
