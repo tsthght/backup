@@ -1,10 +1,12 @@
 package assign
 
 import (
+	"strings"
 	"sync"
 	"time"
 	"fmt"
 
+	"github.com/pingcap/tidb-tools/pkg/dbutil"
 	"github.com/tsthght/backup/database"
 	"github.com/tsthght/backup/utils"
 )
@@ -34,6 +36,22 @@ func AssignTask(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *da
 			fmt.Printf("cancel goroutine by channel")
 			return
 		case <- checkTick.C:
+			//查看自己的状态
+			db1 := database.GetMGRConnection(cluster, user, false)
+			if db1 == nil {
+				fmt.Printf("db1 is nil")
+			} else {
+				stage, err := database.GetStatusFromCmdb(db1, ip)
+				if err != nil {
+					fmt.Printf("get status failed: %s", err.Error())
+				}
+				fmt.Printf("## %s\n", stage)
+				if !strings.EqualFold("idle", stage) {
+					continue
+				}
+				db1.Close()
+			}
+
 			//获取任务（state：todo ），更新（update）状态
 			db := database.GetMGRConnection(cluster, user, true)
 			if db == nil {
