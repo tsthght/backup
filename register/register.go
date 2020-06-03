@@ -42,6 +42,7 @@ func Register(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *data
 				if err != nil {
 				fmt.Printf("register failed: %s", err.Error())
 				}
+				fmt.Printf("do register\n")
 				db.Close()
 			}
 		}
