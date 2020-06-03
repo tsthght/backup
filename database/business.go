@@ -81,6 +81,9 @@ func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 		break
 	}
 	rows.Close()
+	if uuid == -1 {
+		return uuid, nil
+	}
 
 	stmt, err := tx.Prepare(assignTask_sql)
 	if err != nil {
