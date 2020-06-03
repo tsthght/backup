@@ -104,7 +104,7 @@ func GetStatusFromCmdb(db *sql.DB, ip string) (string, error) {
 		tx.Rollback()
 		return "", errors.New("tx Prepare failed:" + err.Error())
 	}
-	rows, err := tx.Query(ip)
+	rows, err := tx.Query(getStatus_sql, ip)
 	if err != nil {
 		return "", errors.New("tx query failed:" + err.Error())
 	}
