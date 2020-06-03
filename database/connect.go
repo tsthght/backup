@@ -36,6 +36,7 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 			}
 			if err := db.Ping(); err != nil {
 				index ++
+				db.Close()
 				continue
 			} else {
 				fmt.Printf("ref: %v\n", ref)
@@ -57,6 +58,7 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 		if len(pu) == 0 {
 			err, pu = getPrimaryUUID(db)
 			if err != nil {
+				db.Close()
 				index ++
 				continue
 			}
@@ -66,6 +68,7 @@ func GetMGRConnection(cluster *MGRInfo, userinfo UserInfo, writenode bool) *sql.
 			cluster.WriteIndex = index
 			return db
 		}
+		db.Close()
 		index ++
 	}
 	return nil
