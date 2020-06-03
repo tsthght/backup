@@ -13,6 +13,7 @@ const (
 		"mem_total, mem_used, mem_used_percent, " +
 		"disk_path, disk_total, disk_free, disk_used_percent) values (?,   ?, ?, ?,    ?, ?, ?   ,?, ?, ?, ?)"
 	getTask_sql = "select uuid from bk_task_info where state = 'todo' order by priority desc, uuid desc limit 1 for update"
+	assignTask_sql = "update bk_machine_info set task_id = ? and stage = 'todo' where ip = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -68,26 +69,24 @@ func AssignFromCmdb(db *sql.DB, ip string) (int64, error) {
 	for rows.Next() {
 		err := rows.Scan(&uuid)
 		if err != nil {
-
+			rows.Close()
+			tx.Rollback()
 			return 0, errors.New("tx scan failed")
 		}
 		break
 	}
 	rows.Close()
-	fmt.Printf("## uuid: %d\n", uuid)
-	/*
-	stmt, err := tx.Prepare(getTask_sql)
+
+	stmt, err := tx.Prepare(assignTask_sql)
 	if err != nil {
 		tx.Rollback()
 		return 0, errors.New("tx Prepare failed")
 	}
-	res, err := stmt.Exec(ip, info.PhysicCoreNum, info.LogicCoreNum, info.Percent,
-		mem.TotalSize, mem.Available, mem.UsedPercent,
-		path, dsk.TotalSize, dsk.Free, dsk.UsedPercent)
+	res, err := stmt.Exec(uuid, ip)
 	if err != nil {
 		tx.Rollback()
 		return 0, errors.New("tx Exec failed")
-	}*/
+	}
 	tx.Commit()
-	return 0, nil
+	return res.RowsAffected()
 }
