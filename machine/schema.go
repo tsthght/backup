@@ -31,6 +31,7 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "prepare_env")
 			}
 			time.Sleep(2 * time.Second)
+			fmt.Printf("current state: %d\n", initState)
 			//todo
 		case PrepareEnv:
 			fmt.Printf("state: prepare_env\n")
