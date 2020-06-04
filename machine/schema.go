@@ -117,8 +117,13 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			fmt.Printf("## bi= %v\n", bi)
 			fmt.Printf("## before %v\n", time.Now())
 			cmd := exec.Command("demo")
+			out, err := cmd.Output()
+			if err != nil {
+				fmt.Printf("call output failed.\n")
+			}
 			cmd.Run()
 			fmt.Printf("## after %v\n", time.Now())
+			fmt.Printf("output: %s\n", string(out))
 
 			err = database.SetMachineStageByIp(db, ip, "pos_check")
 			if err != nil {
