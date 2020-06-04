@@ -21,6 +21,7 @@ const (
 
 func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 	for {
+		fmt.Printf("schema loop...\n")
 		switch initState {
 		case ToDo :
 			fmt.Printf("state: todo\n")
