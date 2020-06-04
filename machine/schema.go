@@ -116,7 +116,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 
 			fmt.Printf("## bi= %v\n", bi)
 			fmt.Printf("## before %v\n", time.Now())
-			cmd := exec.Command("demo")
+			cmd := exec.Command("./demo")
 			out, err := cmd.Output()
 			if err != nil {
 				fmt.Printf("call output failed.\n")
