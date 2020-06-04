@@ -1,10 +1,11 @@
 package task
 
 import (
+	"fmt"
+	"math/rand"
 	"strings"
 	"sync"
 	"time"
-	"fmt"
 
 	"github.com/tsthght/backup/database"
 	"github.com/tsthght/backup/machine"
@@ -30,12 +31,9 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 		}
 	}
 
-	for {
-		select {
-		case <- quit:
-			fmt.Printf("cancel goroutine by channel")
-			return
-		case <- checkTick.C:
+	go func () {
+		for {
+			time.Sleep(time.Duration(rate + rand.Intn(500)) * time.Millisecond)
 			//获取任务类型和任务状态，设置状态各个部分用 协程
 			uuid := -1
 			tp := ""
@@ -72,7 +70,7 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 			switch tp {
 			case "schema":
 				fmt.Printf("do schema logic\n")
-				go machine.StateMachineSchema(machine.ToDo, db, ip, uuid)
+				machine.StateMachineSchema(machine.ToDo, db, ip, uuid)
 			case "full":
 				fmt.Printf("do full logic\n")
 			case "all":
@@ -81,6 +79,14 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 				fmt.Printf("type is error\n")
 				db.Close()
 			}
+		}
+	}()
+
+	for {
+		select {
+		case <- quit:
+			fmt.Printf("cancel goroutine by channel")
+			return
 		}
 	}
 }

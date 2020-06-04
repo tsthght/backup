@@ -19,8 +19,6 @@ const (
 	Done
 )
 
-
-
 func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 	for {
 		switch initState {
