@@ -225,6 +225,7 @@ func SetMachineStageByIp(db *sql.DB, ip ,state string) error {
 		tx.Rollback()
 		return errors.New("call AssignFromCmdb: tx Exec failed")
 	}
+	tx.Commit()
 	return nil
 }
 
@@ -276,5 +277,6 @@ func SetTaskStageByUUID(db *sql.DB, uuid int ,state string) error {
 		tx.Rollback()
 		return errors.New("call AssignFromCmdb: tx Exec failed")
 	}
+	tx.Commit()
 	return nil
 }
