@@ -21,6 +21,9 @@ const (
 	gettasktypebyUUID = "select task_type from bk_task_info where uuid = ?"
 
 	getmachinestagebyip = "select stage from bk_machine_info where ip = ?"
+	setmachinestagebyip = "update bk_machine_info set stage = ? where ip = ?"
+
+	settaskstatebyuuid = "update bk_task_info set state = ? where uuid = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -146,7 +149,7 @@ func GetStatusFromCmdb(db *sql.DB, ip string) (string, error) {
 }
 
 /*
- * 作用：获取当前机器（id）被分配的任务ID
+ * 作用：获取当前机器（ip）被分配的任务ID
  * 返回值：-1 没有被分配任务
  *        [0...] 被分配的任务号
  */
@@ -175,11 +178,11 @@ func GetTaskUUIDAsignedToMachine(db *sql.DB, ip string) (int, error) {
 }
 
 /*
- * 作用：获取当前机器（id）的阶段 stage
+ * 作用：获取当前机器（ip）的阶段 stage
  * 返回值：idle 表示还没有开始任务，需要开始
  *        xxx  表示各个阶段
  */
-func GetMachineStageById(db *sql.DB, ip string) (string, error) {
+func GetMachineStageByIp(db *sql.DB, ip string) (string, error) {
 	tx, err := db.Begin()
 	if err != nil {
 		return "", errors.New("call GetMachineStageById: tx Begin failed: " + err.Error())
@@ -201,6 +204,28 @@ func GetMachineStageById(db *sql.DB, ip string) (string, error) {
 	}
 	tx.Commit()
 	return stage, nil
+}
+
+/*
+ * 作用：设置当前机器（ip）的阶段 stage
+ * 返回值：error
+ */
+func SetMachineStageByIp(db *sql.DB, ip ,state string) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call SetMachineStageByIp: tx Begin failed: " + err.Error())
+	}
+	stmt, err := tx.Prepare(setmachinestagebyip)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("call SetMachineStageByIp: tx Prepare failed")
+	}
+	_, err = stmt.Exec(state, ip)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("call AssignFromCmdb: tx Exec failed")
+	}
+	return nil
 }
 
 /*
@@ -230,4 +255,26 @@ func GetTaskTypeByUUID(db *sql.DB, uuid int) (string, error) {
 	rows.Close()
 	tx.Commit()
 	return tp, nil
+}
+
+/*
+ * 作用：设置任务的状态 state
+ * 返回值：error
+ */
+func SetTaskStageByUUID(db *sql.DB, uuid int ,state string) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call SetMachineStageByIp: tx Begin failed: " + err.Error())
+	}
+	stmt, err := tx.Prepare(settaskstatebyuuid)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("call SetMachineStageByIp: tx Prepare failed")
+	}
+	_, err = stmt.Exec(state, uuid)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("call AssignFromCmdb: tx Exec failed")
+	}
+	return nil
 }

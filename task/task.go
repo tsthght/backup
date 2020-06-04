@@ -55,7 +55,7 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 					continue
 				}
 
-				stage, err := database.GetMachineStageById(db, ip)
+				stage, err := database.GetMachineStageByIp(db, ip)
 				if err != nil {
 					fmt.Printf("GetMachineStageById failed: " + err.Error())
 				}
@@ -67,19 +67,19 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 				if err != nil {
 					fmt.Printf("GetTaskTypeByUUID failed: " + err.Error())
 				}
-				db.Close()
 			}
 
 			switch tp {
 			case "schema":
 				fmt.Printf("do schema logic\n")
-				go machine.StateMachineSchema(machine.ToDo)
+				go machine.StateMachineSchema(machine.ToDo, db, ip)
 			case "full":
 				fmt.Printf("do full logic\n")
 			case "all":
 				fmt.Printf("do all logic\n")
 			default:
 				fmt.Printf("type is error\n")
+				db.Close()
 			}
 		}
 	}
