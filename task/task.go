@@ -1,6 +1,7 @@
 package task
 
 import (
+	"strings"
 	"sync"
 	"time"
 	"fmt"
@@ -58,7 +59,9 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 				if err != nil {
 					fmt.Printf("GetMachineStageById failed: " + err.Error())
 				}
-				fmt.Printf("## stage: %s\n", stage)
+				if !strings.EqualFold(stage, "todo") {
+					continue
+				}
 
 				tp, err = database.GetTaskTypeByUUID(db, uuid)
 				if err != nil {
