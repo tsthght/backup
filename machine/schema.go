@@ -44,6 +44,7 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "pre_check")
 			}
 			time.Sleep(2 * time.Second)
+			fmt.Printf("current state: %d\n", initState)
 			//todo
 			goto loop
 		case PreCheck:
