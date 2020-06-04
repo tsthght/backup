@@ -61,7 +61,7 @@ func main() {
 
 	//task 5s
 	wg.Add(1)
-	go task.Task(quit, &wg, 5000)
+	go task.Task(quit, &wg, 5000, &mgrinfo, userinfo)
 
 	wg.Wait()
 	/*

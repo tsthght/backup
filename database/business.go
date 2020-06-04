@@ -172,3 +172,14 @@ func GetTaskUUIDAsignedToMachine(db *sql.DB, ip string) (int, error) {
 	tx.Commit()
 	return uuid, nil
 }
+
+/*
+ * 作用：获取当前任务的类型type
+ * 返回值："" or "schema" or "full" or "all"
+ */
+func GetTaskTypeByUUID(db *sql.DB, ip string) (string, error) {
+	tx, err := db.Begin()
+	if err != nil {
+
+	}
+}
