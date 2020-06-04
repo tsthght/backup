@@ -178,12 +178,12 @@ func GetTaskUUIDAsignedToMachine(db *sql.DB, ip string) (int, error) {
  * 作用：获取当前任务的类型type
  * 返回值："" or "schema" or "full" or "all"
  */
-func GetTaskTypeByUUID(db *sql.DB, ip string) (string, error) {
+func GetTaskTypeByUUID(db *sql.DB, uuid int) (string, error) {
 	tx, err := db.Begin()
 	if err != nil {
 		return "", errors.New("call GetTaskTypeByUUID: tx Begin failed: " + err.Error())
 	}
-	rows, err := tx.Query(gettasktypebyUUID, ip)
+	rows, err := tx.Query(gettasktypebyUUID, uuid)
 	if err != nil {
 		return "", errors.New("call GetTaskTypeByUUID: tx Query failed: " + err.Error())
 	}

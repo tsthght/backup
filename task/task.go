@@ -47,7 +47,7 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 				}
 				fmt.Printf("## uuid: %d\n", uuid)
 
-				tp, err := database.GetTaskTypeByUUID(db, ip)
+				tp, err := database.GetTaskTypeByUUID(db, uuid)
 				if err != nil {
 					fmt.Printf("GetTaskTypeByUUID failed: " + err.Error())
 				}
