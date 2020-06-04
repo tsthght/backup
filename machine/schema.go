@@ -19,7 +19,7 @@ const (
 )
 
 func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initState int, ip string, uuid int) {
-	loop:
+	for {
 		fmt.Printf("schema loop...\n")
 		switch initState {
 		case ToDo :
@@ -30,7 +30,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			if db == nil {
 				fmt.Printf("db is nil")
 				//应该限制次数的
-				goto loop
+				continue
 			}
 			err := database.SetMachineStageByIp(db, ip, "prepare_env")
 			if err != nil {
@@ -40,7 +40,6 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			time.Sleep(2 * time.Second)
 			fmt.Printf("current state: %d\n", initState)
 			//todo
-			goto loop
 		case PrepareEnv:
 			fmt.Printf("state: prepare_env\n")
 			//更新状态
@@ -49,7 +48,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			if db == nil {
 				fmt.Printf("db is nil")
 				//应该限制次数的
-				goto loop
+				continue
 			}
 			err := database.SetMachineStageByIp(db, ip, "pre_check")
 			if err != nil {
@@ -59,7 +58,6 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			time.Sleep(2 * time.Second)
 			fmt.Printf("current state: %d\n", initState)
 			//todo
-			goto loop
 		case PreCheck:
 			fmt.Printf("state: pre_check\n")
 			//更新状态
@@ -68,7 +66,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			if db == nil {
 				fmt.Printf("db is nil")
 				//应该限制次数的
-				goto loop
+				continue
 			}
 			err := database.SetMachineStageByIp(db, ip, "dumping")
 			if err != nil {
@@ -77,7 +75,6 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			db.Close()
 			time.Sleep(2 * time.Second)
 			//todo
-			goto loop
 		case Dumping:
 			fmt.Printf("state: dumping\n")
 			//更新状态
@@ -86,7 +83,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			if db == nil {
 				fmt.Printf("db is nil")
 				//应该限制次数的
-				goto loop
+				continue
 			}
 			err := database.SetMachineStageByIp(db, ip, "loading")
 			if err != nil {
@@ -95,7 +92,6 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			db.Close()
 			time.Sleep(2 * time.Second)
 			//todo
-			goto loop
 		case Loading:
 			fmt.Printf("state: loading\n")
 			//更新状态
@@ -104,7 +100,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			if db == nil {
 				fmt.Printf("db is nil")
 				//应该限制次数的
-				goto loop
+				continue
 			}
 			err := database.SetMachineStageByIp(db, ip, "pos_check")
 			if err != nil {
@@ -113,7 +109,6 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			db.Close()
 			time.Sleep(2 * time.Second)
 			//todo
-			goto loop
 		case PosCheck:
 			fmt.Printf("state: pos_check\n")
 			//更新状态
@@ -122,7 +117,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			if db == nil {
 				fmt.Printf("db is nil")
 				//应该限制次数的
-				goto loop
+				continue
 			}
 			err := database.SetMachineStageByIp(db, ip, "reset_env")
 			if err != nil {
@@ -131,7 +126,6 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			db.Close()
 			time.Sleep(2 * time.Second)
 			//todo
-			goto loop
 		case ResetEnv:
 			fmt.Printf("state: reset_env\n")
 			//更新状态
@@ -140,7 +134,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			if db == nil {
 				fmt.Printf("db is nil")
 				//应该限制次数的
-				goto loop
+				continue
 			}
 			err := database.SetMachineStageByIp(db, ip, "done")
 			if err != nil {
@@ -149,7 +143,6 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			db.Close()
 			time.Sleep(2 * time.Second)
 			//todo
-			goto loop
 		case Done:
 			fmt.Printf("state: done\n")
 			time.Sleep(2 * time.Second)
@@ -158,7 +151,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			if db == nil {
 				fmt.Printf("db is nil")
 				//应该限制次数的
-				goto loop
+				continue
 			}
 			err := database.SetMachineStageByIp(db, ip, "idle")
 			if err != nil {
@@ -172,4 +165,5 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			db.Close()
 			return
 		}
+	}
 }
