@@ -36,26 +36,31 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 			return
 		case <- checkTick.C:
 			//获取任务类型和任务状态，设置状态各个部分用 协程
+			uuid := -1
+			tp := ""
+			var err error
 			db := database.GetMGRConnection(cluster, user, true)
 			if db == nil {
 				fmt.Printf("db is nil")
 				continue
 			} else {
-				uuid, err := database.GetTaskUUIDAsignedToMachine(db, ip)
+				uuid, err = database.GetTaskUUIDAsignedToMachine(db, ip)
 				if err != nil {
 					fmt.Printf("GetTaskUUIDAsignedToMachine failed: " + err.Error())
 				}
-				fmt.Printf("## uuid: %d\n", uuid)
 
-				tp, err := database.GetTaskTypeByUUID(db, uuid)
+				if uuid < 0 {
+					fmt.Printf("no task todo now\n")
+					continue
+				}
+
+				tp, err = database.GetTaskTypeByUUID(db, uuid)
 				if err != nil {
 					fmt.Printf("GetTaskTypeByUUID failed: " + err.Error())
 				}
-				fmt.Printf("## type: %s\n", tp)
 				db.Close()
 			}
 
-			tp := "schema"
 			switch tp {
 			case "schema":
 				fmt.Printf("do schema logic\n")
