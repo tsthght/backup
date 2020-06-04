@@ -28,5 +28,5 @@ type BkConfig struct {
 	Api API
 	Cmdb CMDB
 	Task TASK
-	blade BladeConfig
+	Blade BladeConfig
 }
