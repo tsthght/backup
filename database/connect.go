@@ -112,7 +112,7 @@ func getCurrentUUID(db *sql.DB) (error, string) {
 	return errors.New("unexpected error when call GetPrimaryUUID"), ""
 }
 
-func GetTiDBConnection(cluster *TiDBInfo, userinfo UserInfo, writenode bool) *sql.DB {
+func GetTiDBConnection(cluster *BladeInfo, userinfo UserInfo, writenode bool) *sql.DB {
 	ips := cluster.Hosts
 	l := 0
 	if l = len(ips); l == 0 {
