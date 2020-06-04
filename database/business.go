@@ -27,6 +27,10 @@ const (
 	setmachinestagebyip = "update bk_machine_info set stage = ? where ip = ?"
 
 	settaskstatebyuuid = "update bk_task_info set state = ? where uuid = ?"
+
+	gettasksrcdstbyuuid = "select src, dst from bk_task_info where uuid = ?"
+
+	getsqlnode = "select hostname from bladecmdb.blade_sql where physical_cluster_name = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -288,13 +292,56 @@ func SetTaskStageByUUID(db *sql.DB, uuid int ,state string) error {
  * 作用：获得集群的基本信息
  */
 
-func GetCluserBasicInfo(db *sql.DB, uuid int, cfg config.BkConfig, tp int) (BladeInfo, error) {
+func GetCluserBasicInfo(db *sql.DB, uuid int, cfg config.BkConfig, tp int) (*BladeInfo, error) {
 	bi := BladeInfo{}
 	bi.User = cfg.Blade.BladeUser
 	//需要获取appkey
 	bi.Password = secret.GetValueByeKey(cfg.Blade.BladeAk, bi.User)
-	fmt.Printf("bladeinfo: %v\n", bi)
-	//获取tidb节点
+	//获取SQL节点
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, errors.New("call GetTaskTypeByUUID: tx Begin failed: " + err.Error())
+	}
+	rows, err := tx.Query(gettasksrcdstbyuuid, uuid)
+	if err != nil {
+		return nil, errors.New("call GetTaskTypeByUUID: tx Query failed: " + err.Error())
+	}
+	var src, dst, cluster string
+	for rows.Next() {
+		err := rows.Scan(&src, &dst)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return nil, errors.New("call GetTaskTypeByUUID: tx scan failed: " + err.Error())
+		}
+		rows.Close()
+		break
+	}
+	rows.Close()
 
-	return bi, nil
+	if tp == DownStream {
+		cluster = dst
+	} else {
+		cluster = src
+	}
+
+	rows, err = tx.Query(getsqlnode, cluster)
+	if err != nil {
+		return nil, errors.New("call GetTaskTypeByUUID: tx Query failed: " + err.Error())
+	}
+
+	var sqlnode string
+	for rows.Next() {
+		err := rows.Scan(&sqlnode)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return nil, errors.New("call GetTaskTypeByUUID: tx scan failed: " + err.Error())
+		}
+		bi.Hosts = append(bi.Hosts, sqlnode)
+	}
+	rows.Close()
+
+	tx.Commit()
+	return &bi, nil
 }

@@ -60,7 +60,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			fmt.Printf("current state: %d\n", initState)
 			//todo
 		case PreCheck:
-			//获得用户名/密码
+			//没必要修改gc时间
 			fmt.Printf("state: pre_check\n")
 			//更新状态
 			initState = Dumping
@@ -78,6 +78,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			time.Sleep(2 * time.Second)
 			//todo
 		case Dumping:
+			//获取信息
 			fmt.Printf("state: dumping\n")
 			//更新状态
 			initState = Loading
@@ -87,7 +88,15 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				//应该限制次数的
 				continue
 			}
-			err := database.SetMachineStageByIp(db, ip, "loading")
+			bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
+			if err != nil {
+				fmt.Printf("call GetCluserBasicInfo failed.\n")
+				continue
+			}
+
+			fmt.Printf("## bi= %v\n", bi)
+
+			err = database.SetMachineStageByIp(db, ip, "loading")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "loading")
 			}

@@ -43,8 +43,6 @@ func main() {
 	}
 	fmt.Printf("%v\n", mgrinfo)
 
-	database.GetCluserBasicInfo(nil, 0, conf, database.UpStream)
-
 	//启动任务
 	wg := sync.WaitGroup{}
 	quit := make(chan time.Time)
