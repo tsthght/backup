@@ -18,6 +18,7 @@ const (
 	doingTask_ssql = "update bk_task_info set state = 'doing' where uuid = ?"
 
 	gettaskUUIDasignedtomachine = "select task_id from bk_machine_info where ip = ?"
+	gettasktypebyUUID = "select task_type from bk_task_info where uuid = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -153,9 +154,9 @@ func GetTaskUUIDAsignedToMachine(db *sql.DB, ip string) (int, error) {
 	if err != nil {
 		return -1, errors.New("call GetTaskUUIDAsignedToMachine: tx Begin failed: " + err.Error())
 	}
-	rows, err := tx.Query(gettaskUUIDasignedtomachine)
+	rows, err := tx.Query(gettaskUUIDasignedtomachine, ip)
 	if err != nil {
-		return -1, errors.New("call GetTaskUUIDAsignedToMachine")
+		return -1, errors.New("call GetTaskUUIDAsignedToMachine: tx Query failed: " + err.Error())
 	}
 	uuid := -1
 	for rows.Next() {
@@ -180,6 +181,24 @@ func GetTaskUUIDAsignedToMachine(db *sql.DB, ip string) (int, error) {
 func GetTaskTypeByUUID(db *sql.DB, ip string) (string, error) {
 	tx, err := db.Begin()
 	if err != nil {
-
+		return "", errors.New("call GetTaskTypeByUUID: tx Begin failed: " + err.Error())
 	}
+	rows, err := tx.Query(gettasktypebyUUID, ip)
+	if err != nil {
+		return "", errors.New("call GetTaskTypeByUUID: tx Query failed: " + err.Error())
+	}
+	tp := ""
+	for rows.Next() {
+		err := rows.Scan(&tp)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return tp, errors.New("call GetTaskTypeByUUID: tx scan failed: " + err.Error())
+		}
+		rows.Close()
+		break
+	}
+	rows.Close()
+	tx.Commit()
+	return tp, nil
 }

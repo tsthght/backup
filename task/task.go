@@ -46,6 +46,12 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 					fmt.Printf("GetTaskUUIDAsignedToMachine failed: " + err.Error())
 				}
 				fmt.Printf("## uuid: %d\n", uuid)
+
+				tp, err := database.GetTaskTypeByUUID(db, ip)
+				if err != nil {
+					fmt.Printf("GetTaskTypeByUUID failed: " + err.Error())
+				}
+				fmt.Printf("## type: %s\n", tp)
 			}
 
 			tp := "schema"
