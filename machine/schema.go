@@ -20,7 +20,7 @@ const (
 )
 
 func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
-	for {
+	loop:
 		fmt.Printf("schema loop...\n")
 		switch initState {
 		case ToDo :
@@ -34,6 +34,7 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			time.Sleep(2 * time.Second)
 			fmt.Printf("current state: %d\n", initState)
 			//todo
+			goto loop
 		case PrepareEnv:
 			fmt.Printf("state: prepare_env\n")
 			//更新状态
@@ -44,6 +45,7 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			}
 			time.Sleep(2 * time.Second)
 			//todo
+			goto loop
 		case PreCheck:
 			fmt.Printf("state: pre_check\n")
 			//更新状态
@@ -54,6 +56,7 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			}
 			time.Sleep(2 * time.Second)
 			//todo
+			goto loop
 		case Dumping:
 			fmt.Printf("state: dumping\n")
 			//更新状态
@@ -64,6 +67,7 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			}
 			time.Sleep(2 * time.Second)
 			//todo
+			goto loop
 		case Loading:
 			fmt.Printf("state: loading\n")
 			//更新状态
@@ -74,6 +78,7 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			}
 			time.Sleep(2 * time.Second)
 			//todo
+			goto loop
 		case PosCheck:
 			fmt.Printf("state: pos_check\n")
 			//更新状态
@@ -84,6 +89,7 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			}
 			time.Sleep(2 * time.Second)
 			//todo
+			goto loop
 		case ResetEnv:
 			fmt.Printf("state: reset_env\n")
 			//更新状态
@@ -94,6 +100,7 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			}
 			time.Sleep(2 * time.Second)
 			//todo
+			goto loop
 		case Done:
 			fmt.Printf("state: done\n")
 			time.Sleep(2 * time.Second)
@@ -108,7 +115,6 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			}
 			//设置任务状态
 			db.Close()
-			break
+			return
 		}
-	}
 }
