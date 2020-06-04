@@ -52,6 +52,7 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 					fmt.Printf("GetTaskTypeByUUID failed: " + err.Error())
 				}
 				fmt.Printf("## type: %s\n", tp)
+				db.Close()
 			}
 
 			tp := "schema"
