@@ -16,6 +16,8 @@ const (
 	assignTask_sql = "update bk_machine_info set task_id = ?, stage = 'todo' where ip = ?"
 	getStatus_sql = "select stage from bk_machine_info where ip = ?"
 	doingTask_ssql = "update bk_task_info set state = 'doing' where uuid = ?"
+
+	gettaskUUIDasignedtomachine = "select task_id from bk_machine_info where ip = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -121,10 +123,6 @@ func GetStatusFromCmdb(db *sql.DB, ip string) (string, error) {
 	if err != nil {
 		return "", errors.New("call GetStatusFromCmdb: tx Begin failed: " + err.Error())
 	}
-	if err != nil {
-		tx.Rollback()
-		return "", errors.New("call GetStatusFromCmdb: tx Prepare failed:" + err.Error())
-	}
 	rows, err := tx.Query(getStatus_sql, ip)
 	if err != nil {
 		return "", errors.New("call GetStatusFromCmdb: tx query failed:" + err.Error())
@@ -140,6 +138,37 @@ func GetStatusFromCmdb(db *sql.DB, ip string) (string, error) {
 		rows.Close()
 		break
 	}
+	rows.Close()
 	tx.Commit()
 	return stage, nil
+}
+
+/*
+ * 作用：获取当前机器（id）被分配的任务ID
+ * 返回值：-1 没有被分配任务
+ *        [0...] 被分配的任务号
+ */
+func GetTaskUUIDAsignedToMachine(db *sql.DB, ip string) (int, error) {
+	tx, err := db.Begin()
+	if err != nil {
+		return -1, errors.New("call GetTaskUUIDAsignedToMachine: tx Begin failed: " + err.Error())
+	}
+	rows, err := tx.Query(gettaskUUIDasignedtomachine)
+	if err != nil {
+		return -1, errors.New("call GetTaskUUIDAsignedToMachine")
+	}
+	uuid := -1
+	for rows.Next() {
+		err := rows.Scan(&uuid)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return uuid, errors.New("call GetTaskUUIDAsignedToMachine: tx scan failed: " + err.Error())
+		}
+		rows.Close()
+		break
+	}
+	rows.Close()
+	tx.Commit()
+	return uuid, nil
 }

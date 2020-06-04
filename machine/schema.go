@@ -12,6 +12,8 @@ const (
 	resetenv
 )
 
+
+
 func StateMachineSchema() int {
 	for {
 		time.Sleep(10000)
