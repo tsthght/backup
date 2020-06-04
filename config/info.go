@@ -18,6 +18,7 @@ type CMDB struct {
 
 type BladeConfig struct {
 	BladeUser string              `toml:"bladeuser" json:"bladeuser"`
+	BladePort int                 `toml:"bladeport" json:"bladeport"`
 }
 
 type TASK struct {
