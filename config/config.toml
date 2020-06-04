@@ -13,5 +13,6 @@ cmdb_db = "backupnetes"
 [task]
 path = "/opt/"
 [blade]
+bladeappkey = "test.test"
 bladeuser = "admin"
 bladeport = 4000

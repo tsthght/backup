@@ -17,6 +17,7 @@ type CMDB struct {
 }
 
 type BladeConfig struct {
+	BladeAk string                `toml:"bladeappkey" json:"bladeappkey"`
 	BladeUser string              `toml:"bladeuser" json:"bladeuser"`
 	BladePort int                 `toml:"bladeport" json:"bladeport"`
 }

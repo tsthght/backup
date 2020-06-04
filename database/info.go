@@ -1,12 +1,19 @@
 package database
 
+const (
+	UpStream = iota
+	DownStream
+)
+
 type MGRInfo struct {
 	Hosts []string
 	WriteIndex int
 }
 
-type TiDBInfo struct {
+type BladeInfo struct {
 	Hosts []string
+	User string
+	Password string
 	Port int
 }
 

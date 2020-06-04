@@ -4,6 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
+	"github.com/tsthght/backup/config"
+	"github.com/tsthght/backup/secret"
 )
 
 const (
@@ -279,4 +282,19 @@ func SetTaskStageByUUID(db *sql.DB, uuid int ,state string) error {
 	}
 	tx.Commit()
 	return nil
+}
+
+/*
+ * 作用：获得集群的基本信息
+ */
+
+func GetCluserBasicInfo(db *sql.DB, uuid int, cfg config.BkConfig, tp int) (BladeInfo, error) {
+	bi := BladeInfo{}
+	bi.User = cfg.Blade.BladeUser
+	//需要获取appkey
+	bi.Password = secret.GetValueByeKey(cfg.Blade.BladeAk, bi.User)
+	fmt.Printf("bladeinfo: %v\n", bi)
+	//获取tidb节点
+
+	return bi, nil
 }

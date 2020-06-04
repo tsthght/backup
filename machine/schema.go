@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
 )
 
@@ -18,7 +19,7 @@ const (
 	Done
 )
 
-func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initState int, ip string, uuid int) {
+func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int) {
 	for {
 		fmt.Printf("schema loop...\n")
 		switch initState {
@@ -59,6 +60,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initS
 			fmt.Printf("current state: %d\n", initState)
 			//todo
 		case PreCheck:
+			//获得用户名/密码
 			fmt.Printf("state: pre_check\n")
 			//更新状态
 			initState = Dumping

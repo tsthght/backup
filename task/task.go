@@ -7,12 +7,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
 	"github.com/tsthght/backup/machine"
 	"github.com/tsthght/backup/utils"
 )
 
-func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database.MGRInfo, user database.UserInfo) {
+func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig) {
 	defer wg.Done()
 
 	checkTick := time.NewTicker(time.Duration(rate) * time.Millisecond)
@@ -79,7 +80,7 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 			switch tp {
 			case "schema":
 				fmt.Printf("do schema logic\n")
-				machine.StateMachineSchema(cluster, user, machine.ToDo, ip, uuid)
+				machine.StateMachineSchema(cluster, user, cfg, machine.ToDo, ip, uuid)
 			case "full":
 				fmt.Printf("do full logic\n")
 			case "all":
