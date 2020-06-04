@@ -72,7 +72,7 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 			switch tp {
 			case "schema":
 				fmt.Printf("do schema logic\n")
-				go machine.StateMachineSchema(machine.ToDo, db, ip)
+				go machine.StateMachineSchema(machine.ToDo, db, ip, uuid)
 			case "full":
 				fmt.Printf("do full logic\n")
 			case "all":
