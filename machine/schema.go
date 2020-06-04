@@ -2,6 +2,7 @@ package machine
 
 import (
 	"fmt"
+	"os/exec"
 	"time"
 
 	"github.com/tsthght/backup/config"
@@ -88,15 +89,8 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				//应该限制次数的
 				continue
 			}
-			bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
-			if err != nil {
-				fmt.Printf("call GetCluserBasicInfo failed.\n")
-				continue
-			}
 
-			fmt.Printf("## bi= %v\n", bi)
-
-			err = database.SetMachineStageByIp(db, ip, "loading")
+			err := database.SetMachineStageByIp(db, ip, "loading")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "loading")
 			}
@@ -113,7 +107,20 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				//应该限制次数的
 				continue
 			}
-			err := database.SetMachineStageByIp(db, ip, "pos_check")
+
+			bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
+			if err != nil {
+				fmt.Printf("call GetCluserBasicInfo failed.\n")
+				continue
+			}
+
+			fmt.Printf("## bi= %v\n", bi)
+
+			cmd := exec.Command("demo")
+			cmd.Run()
+			fmt.Printf("## finished\n")
+
+			err = database.SetMachineStageByIp(db, ip, "pos_check")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "pos_check")
 			}
