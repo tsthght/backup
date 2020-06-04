@@ -66,11 +66,12 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 					fmt.Printf("GetTaskTypeByUUID failed: " + err.Error())
 				}
 			}
+			db.Close()
 
 			switch tp {
 			case "schema":
 				fmt.Printf("do schema logic\n")
-				machine.StateMachineSchema(machine.ToDo, db, ip, uuid)
+				machine.StateMachineSchema(cluster, user, machine.ToDo, ip, uuid)
 			case "full":
 				fmt.Printf("do full logic\n")
 			case "all":

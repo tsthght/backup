@@ -1,7 +1,6 @@
 package machine
 
 import (
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -19,7 +18,7 @@ const (
 	Done
 )
 
-func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
+func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, initState int, ip string, uuid int) {
 	loop:
 		fmt.Printf("schema loop...\n")
 		switch initState {
@@ -27,10 +26,17 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			fmt.Printf("state: todo\n")
 			//更新状态
 			initState = PrepareEnv
+			db := database.GetMGRConnection(cluster, user, true)
+			if db == nil {
+				fmt.Printf("db is nil")
+				//应该限制次数的
+				goto loop
+			}
 			err := database.SetMachineStageByIp(db, ip, "prepare_env")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "prepare_env")
 			}
+			db.Close()
 			time.Sleep(2 * time.Second)
 			fmt.Printf("current state: %d\n", initState)
 			//todo
@@ -39,10 +45,17 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			fmt.Printf("state: prepare_env\n")
 			//更新状态
 			initState = PreCheck
+			db := database.GetMGRConnection(cluster, user, true)
+			if db == nil {
+				fmt.Printf("db is nil")
+				//应该限制次数的
+				goto loop
+			}
 			err := database.SetMachineStageByIp(db, ip, "pre_check")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "pre_check")
 			}
+			db.Close()
 			time.Sleep(2 * time.Second)
 			fmt.Printf("current state: %d\n", initState)
 			//todo
@@ -51,10 +64,17 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			fmt.Printf("state: pre_check\n")
 			//更新状态
 			initState = Dumping
+			db := database.GetMGRConnection(cluster, user, true)
+			if db == nil {
+				fmt.Printf("db is nil")
+				//应该限制次数的
+				goto loop
+			}
 			err := database.SetMachineStageByIp(db, ip, "dumping")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "dumping")
 			}
+			db.Close()
 			time.Sleep(2 * time.Second)
 			//todo
 			goto loop
@@ -62,10 +82,17 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			fmt.Printf("state: dumping\n")
 			//更新状态
 			initState = Loading
+			db := database.GetMGRConnection(cluster, user, true)
+			if db == nil {
+				fmt.Printf("db is nil")
+				//应该限制次数的
+				goto loop
+			}
 			err := database.SetMachineStageByIp(db, ip, "loading")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "loading")
 			}
+			db.Close()
 			time.Sleep(2 * time.Second)
 			//todo
 			goto loop
@@ -73,10 +100,17 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			fmt.Printf("state: loading\n")
 			//更新状态
 			initState = PosCheck
+			db := database.GetMGRConnection(cluster, user, true)
+			if db == nil {
+				fmt.Printf("db is nil")
+				//应该限制次数的
+				goto loop
+			}
 			err := database.SetMachineStageByIp(db, ip, "pos_check")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "pos_check")
 			}
+			db.Close()
 			time.Sleep(2 * time.Second)
 			//todo
 			goto loop
@@ -84,10 +118,17 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			fmt.Printf("state: pos_check\n")
 			//更新状态
 			initState = ResetEnv
+			db := database.GetMGRConnection(cluster, user, true)
+			if db == nil {
+				fmt.Printf("db is nil")
+				//应该限制次数的
+				goto loop
+			}
 			err := database.SetMachineStageByIp(db, ip, "reset_env")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "reset_env")
 			}
+			db.Close()
 			time.Sleep(2 * time.Second)
 			//todo
 			goto loop
@@ -95,10 +136,17 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			fmt.Printf("state: reset_env\n")
 			//更新状态
 			initState = Done
+			db := database.GetMGRConnection(cluster, user, true)
+			if db == nil {
+				fmt.Printf("db is nil")
+				//应该限制次数的
+				goto loop
+			}
 			err := database.SetMachineStageByIp(db, ip, "done")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "done")
 			}
+			db.Close()
 			time.Sleep(2 * time.Second)
 			//todo
 			goto loop
@@ -106,6 +154,12 @@ func StateMachineSchema(initState int, db *sql.DB, ip string, uuid int) {
 			fmt.Printf("state: done\n")
 			time.Sleep(2 * time.Second)
 			//更新状态
+			db := database.GetMGRConnection(cluster, user, true)
+			if db == nil {
+				fmt.Printf("db is nil")
+				//应该限制次数的
+				goto loop
+			}
 			err := database.SetMachineStageByIp(db, ip, "idle")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "idle")
