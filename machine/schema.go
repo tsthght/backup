@@ -3,18 +3,18 @@ package machine
 import "time"
 
 const (
-	todo = iota
-	prepareenv
-	precheck
-	dumping
-	loading
-	poscheck
-	resetenv
+	ToDo = iota
+	PrepareEnv
+	PreCheck
+	Dumping
+	Loading
+	PosCheck
+	ResetEnv
 )
 
 
 
-func StateMachineSchema() int {
+func StateMachineSchema(initState int) int {
 	for {
 		time.Sleep(10000)
 	}

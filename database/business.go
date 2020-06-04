@@ -19,6 +19,8 @@ const (
 
 	gettaskUUIDasignedtomachine = "select task_id from bk_machine_info where ip = ?"
 	gettasktypebyUUID = "select task_type from bk_task_info where uuid = ?"
+
+	getmachinestagebyip = "select stage from bk_machine_info where ip = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -139,7 +141,6 @@ func GetStatusFromCmdb(db *sql.DB, ip string) (string, error) {
 		rows.Close()
 		break
 	}
-	rows.Close()
 	tx.Commit()
 	return stage, nil
 }
@@ -169,9 +170,37 @@ func GetTaskUUIDAsignedToMachine(db *sql.DB, ip string) (int, error) {
 		rows.Close()
 		break
 	}
-	rows.Close()
 	tx.Commit()
 	return uuid, nil
+}
+
+/*
+ * 作用：获取当前机器（id）的阶段 stage
+ * 返回值：idle 表示还没有开始任务，需要开始
+ *        xxx  表示各个阶段
+ */
+func GetMachineStageById(db *sql.DB, ip string) (string, error) {
+	tx, err := db.Begin()
+	if err != nil {
+		return "", errors.New("call GetMachineStageById: tx Begin failed: " + err.Error())
+	}
+	rows, err := tx.Query(getmachinestagebyip, ip)
+	if err != nil {
+		return "", errors.New("call GetMachineStageById: tx Query failed: " + err.Error())
+	}
+	stage := ""
+	for rows.Next() {
+		err := rows.Scan(&stage)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return stage, errors.New("call GetMachineStageById: tx scan failed: " + err.Error())
+		}
+		rows.Close()
+		break
+	}
+	tx.Commit()
+	return stage, nil
 }
 
 /*
