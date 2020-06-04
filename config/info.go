@@ -16,12 +16,17 @@ type CMDB struct {
 	Database string              `toml:"cmdb_db" json:"cmdb_db"`
 }
 
+type BladeConfig struct {
+	BladeUser string              `toml:"bladeuser" json:"bladeuser"`
+}
+
 type TASK struct {
-	Path string
+	Path string                  `toml:"path" json:"path"`
 }
 
 type BkConfig struct {
 	Api API
 	Cmdb CMDB
 	Task TASK
+	blade BladeConfig
 }

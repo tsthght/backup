@@ -12,3 +12,5 @@ cmdb_host = "1.1.1.1,2.2.2.2,3.3.3.3"
 cmdb_db = "backupnetes"
 [task]
 path = "/opt/"
+[blade]
+bladeuser = "admin"
