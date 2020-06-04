@@ -46,24 +46,32 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 				uuid, err = database.GetTaskUUIDAsignedToMachine(db, ip)
 				if err != nil {
 					fmt.Printf("GetTaskUUIDAsignedToMachine failed: " + err.Error())
+					db.Close()
+					continue
 				}
 
 				if uuid < 0 {
 					fmt.Printf("no task todo now\n")
+					db.Close()
 					continue
 				}
 
 				stage, err := database.GetMachineStageByIp(db, ip)
 				if err != nil {
 					fmt.Printf("GetMachineStageById failed: " + err.Error())
+					db.Close()
+					continue
 				}
 				if !strings.EqualFold(stage, "todo") {
+					db.Close()
 					continue
 				}
 
 				tp, err = database.GetTaskTypeByUUID(db, uuid)
 				if err != nil {
 					fmt.Printf("GetTaskTypeByUUID failed: " + err.Error())
+					db.Close()
+					continue
 				}
 			}
 			db.Close()
