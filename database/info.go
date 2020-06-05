@@ -14,7 +14,7 @@ type BladeInfo struct {
 	Hosts []string
 	User string
 	Password string
-	Port int
+	Port string
 }
 
 type UserInfo struct {

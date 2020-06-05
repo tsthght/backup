@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/secret"
@@ -31,6 +32,10 @@ const (
 	gettasksrcdstbyuuid = "select src, dst from bk_task_info where uuid = ?"
 
 	getsqlnode = "select hostname from bladecmdb.blade_sql where physical_cluster_name = ?"
+
+	getdbinfobyuuid = "select dbinfo from bk_task_info where uuid = %d"
+
+	settaskstateandmessagebyuuid = "update bk_task_info set state = ? and error_message = ? where uuid = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -294,6 +299,7 @@ func SetTaskStageByUUID(db *sql.DB, uuid int ,state string) error {
 
 func GetCluserBasicInfo(db *sql.DB, uuid int, cfg config.BkConfig, tp int) (*BladeInfo, error) {
 	bi := BladeInfo{}
+	bi.Port = strconv.Itoa(cfg.Blade.BladePort)
 	bi.User = cfg.Blade.BladeUser
 	//需要获取appkey
 	bi.Password = secret.GetValueByeKey(cfg.Blade.BladeAk, bi.User)
@@ -344,4 +350,54 @@ func GetCluserBasicInfo(db *sql.DB, uuid int, cfg config.BkConfig, tp int) (*Bla
 
 	tx.Commit()
 	return &bi, nil
+}
+
+/*
+ * 作用：获取任务的
+ */
+func GetDBInfoByUUID(db *sql.DB, uuid int) (string, error) {
+	tx, err := db.Begin()
+	if err != nil {
+		return "", errors.New("call GetDBInfoByUUID: tx Begin failed: " + err.Error())
+	}
+	rows, err := tx.Query(getdbinfobyuuid, uuid)
+	if err != nil {
+		return "", errors.New("call GetDBInfoByUUID: tx Query failed: " + err.Error())
+	}
+	dbinfo := ""
+	for rows.Next() {
+		err := rows.Scan(&dbinfo)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return dbinfo, errors.New("call GetDBInfoByUUID: tx scan failed: " + err.Error())
+		}
+		rows.Close()
+		break
+	}
+	rows.Close()
+	tx.Commit()
+	return dbinfo, nil
+}
+
+/*
+ * 作用：修改任务的状态
+ */
+func SetTaskStateAndMessageByUUID(db *sql.DB, uuid int, state, message string) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call SetTaskStateByUUID: tx Begin failed: " + err.Error())
+	}
+	stmt, err := tx.Prepare(settaskstateandmessagebyuuid)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("call SetTaskStateAndMessageByUUID: tx Prepare failed")
+	}
+	_, err = stmt.Exec(state, message, uuid)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("call SetTaskStateAndMessageByUUID: tx Exec failed")
+	}
+	tx.Commit()
+	return nil
 }
