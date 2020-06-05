@@ -35,7 +35,7 @@ const (
 
 	getdbinfobyuuid = "select dbinfo from bk_task_info where uuid = %d"
 
-	settaskstateandmessagebyuuid = "update bk_task_info set state = ? and error_message = ? where uuid = ?"
+	settaskstateandmessagebyuuid = "update bk_task_info set state = ?, error_message = ? where uuid = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {

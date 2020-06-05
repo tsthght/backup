@@ -20,6 +20,7 @@ const (
 	PosCheck
 	ResetEnv
 	Done
+	Failed
 )
 
 func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int) {
@@ -155,7 +156,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 					//应该限制次数的
 					continue
 				}
-				initState = ResetEnv
+				initState = Failed
 				err = database.SetTaskStateAndMessageByUUID(db, uuid, "failed", err.Error())
 				if err != nil {
 					fmt.Printf("call SetTaskStateAndMessageByUUID failed. err: %s\n", err.Error())
@@ -175,7 +176,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 
 			if len(output) != 0 {
 				//修改状态，有问题，终止流程
-				initState = ResetEnv
+				initState = Failed
 				database.SetTaskStateAndMessageByUUID(db, uuid, "failed", string(output))
 				db.Close()
 				continue
@@ -279,6 +280,8 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			}
 			//设置任务状态
 			db.Close()
+			return
+		case Failed:
 			return
 		}
 	}
