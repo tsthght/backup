@@ -98,7 +98,6 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				db.Close()
 				continue
 			}
-			db.Close()
 
 			var args []string = nil
 			//host
@@ -145,6 +144,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			//path
 			args = append(args, "-o " + BKPATH)
 
+			db.Close()
 			fmt.Printf("## bi= %v\n", bi)
 			fmt.Printf("## before %v\n", time.Now())
 			output, err := execute.ExecuteCommand(cfg.Task.Path, "mydumper", args...)
@@ -157,6 +157,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 					continue
 				}
 				initState = Failed
+				fmt.Printf("change state to failed")
 				err = database.SetTaskStateAndMessageByUUID(db, uuid, "failed", err.Error())
 				if err != nil {
 					fmt.Printf("call SetTaskStateAndMessageByUUID failed. err: %s\n", err.Error())
@@ -229,14 +230,14 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 		case PosCheck:
 			fmt.Printf("state: pos_check\n")
 			//更新状态
-			initState = ResetEnv
+			initState = Done
 			db := database.GetMGRConnection(cluster, user, true)
 			if db == nil {
 				fmt.Printf("db is nil")
 				//应该限制次数的
 				continue
 			}
-			err := database.SetMachineStageByIp(db, ip, "reset_env")
+			err := database.SetMachineStageByIp(db, ip, "done")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "reset_env")
 			}
@@ -282,6 +283,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			db.Close()
 			return
 		case Failed:
+
 			return
 		}
 	}
