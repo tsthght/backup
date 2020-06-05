@@ -153,7 +153,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			fmt.Printf("## after %v\n", time.Now())
 			fmt.Printf("output: %s\n", string(output))
 
-			db := database.GetMGRConnection(cluster, user, true)
+			db = database.GetMGRConnection(cluster, user, true)
 			if db == nil {
 				fmt.Printf("db is nil")
 				//应该限制次数的
