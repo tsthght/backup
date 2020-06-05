@@ -148,7 +148,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			fmt.Printf("## before %v\n", time.Now())
 			output, err := execute.ExecuteCommand(cfg.Task.Path, "mydumper", args...)
 			if err != nil {
-				fmt.Printf("call ExecuteCommand failed.\n")
+				fmt.Printf("call ExecuteCommand failed. err: %s\n", err.Error())
 				db = database.GetMGRConnection(cluster, user, true)
 				if db == nil {
 					fmt.Printf("db is nil")
@@ -156,7 +156,10 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 					continue
 				}
 				initState = ResetEnv
-				database.SetTaskStateAndMessageByUUID(db, uuid, "failed", err.Error())
+				err = database.SetTaskStateAndMessageByUUID(db, uuid, "failed", err.Error())
+				if err != nil {
+					fmt.Printf("call SetTaskStateAndMessageByUUID failed. err: %s\n", err.Error())
+				}
 				db.Close()
 				continue
 			}
