@@ -33,7 +33,7 @@ const (
 
 	getsqlnode = "select hostname from bladecmdb.blade_sql where physical_cluster_name = ?"
 
-	getdbinfobyuuid = "select dbinfo from bk_task_info where uuid = %d"
+	getdbinfobyuuid = "select dbinfo from bk_task_info where uuid = ?"
 
 	settaskstateandmessagebyuuid = "update bk_task_info set state = ?, error_message = ? where uuid = ?"
 )
