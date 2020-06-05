@@ -2,11 +2,11 @@ package machine
 
 import (
 	"fmt"
-	"os/exec"
 	"time"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
+	"github.com/tsthght/backup/execute"
 )
 
 const (
@@ -99,14 +99,12 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			fmt.Printf("## bi= %v\n", bi)
 			fmt.Printf("## before %v\n", time.Now())
 
-			cmd := exec.Command("./mydumper ")
-			out, err := cmd.Output()
+			output, err := execute.ExecuteCommand(cfg.Task.Path, "demo")
 			if err != nil {
-				fmt.Printf("call output failed.\n")
+				fmt.Printf("call ExecuteCommand failed.\n")
 			}
-			cmd.Run()
 			fmt.Printf("## after %v\n", time.Now())
-			fmt.Printf("output: %s\n", string(out))
+			fmt.Printf("output: %s\n", string(output))
 
 			err = database.SetMachineStageByIp(db, ip, "loading")
 			if err != nil {
@@ -135,14 +133,12 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			fmt.Printf("## bi= %v\n", bi)
 			fmt.Printf("## before %v\n", time.Now())
 
-			cmd := exec.Command("./mydumper ")
-			out, err := cmd.Output()
+			output, err := execute.ExecuteCommand(cfg.Task.Path, "demo")
 			if err != nil {
-				fmt.Printf("call output failed.\n")
+				fmt.Printf("call ExecuteCommand failed.\n")
 			}
-			cmd.Run()
 			fmt.Printf("## after %v\n", time.Now())
-			fmt.Printf("output: %s\n", string(out))
+			fmt.Printf("output: %s\n", string(output))
 
 			err = database.SetMachineStageByIp(db, ip, "pos_check")
 			if err != nil {
