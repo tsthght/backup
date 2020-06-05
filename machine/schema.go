@@ -90,7 +90,25 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				continue
 			}
 
-			err := database.SetMachineStageByIp(db, ip, "loading")
+			bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
+			if err != nil {
+				fmt.Printf("call GetCluserBasicInfo failed.\n")
+				continue
+			}
+
+			fmt.Printf("## bi= %v\n", bi)
+			fmt.Printf("## before %v\n", time.Now())
+
+			cmd := exec.Command("./mydumper ")
+			out, err := cmd.Output()
+			if err != nil {
+				fmt.Printf("call output failed.\n")
+			}
+			cmd.Run()
+			fmt.Printf("## after %v\n", time.Now())
+			fmt.Printf("output: %s\n", string(out))
+
+			err = database.SetMachineStageByIp(db, ip, "loading")
 			if err != nil {
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "loading")
 			}
@@ -116,7 +134,8 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 
 			fmt.Printf("## bi= %v\n", bi)
 			fmt.Printf("## before %v\n", time.Now())
-			cmd := exec.Command("./demo")
+
+			cmd := exec.Command("./mydumper ")
 			out, err := cmd.Output()
 			if err != nil {
 				fmt.Printf("call output failed.\n")
