@@ -149,6 +149,16 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			output, err := execute.ExecuteCommand(cfg.Task.Path, "mydumper", args...)
 			if err != nil {
 				fmt.Printf("call ExecuteCommand failed.\n")
+				db = database.GetMGRConnection(cluster, user, true)
+				if db == nil {
+					fmt.Printf("db is nil")
+					//应该限制次数的
+					continue
+				}
+				initState = ResetEnv
+				database.SetTaskStateAndMessageByUUID(db, uuid, "failed", err.Error())
+				db.Close()
+				continue
 			}
 			fmt.Printf("## after %v\n", time.Now())
 			fmt.Printf("output: %s\n", string(output))
