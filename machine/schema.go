@@ -147,7 +147,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			db.Close()
 			fmt.Printf("## bi= %v\n", bi)
 			fmt.Printf("## before %v\n", time.Now())
-			fmt.Printf("== rgs: %v\n", args)
+			fmt.Printf("== rgs: as%v\n", args)
 			output, err := execute.ExecuteCommand(cfg.Task.Path, "mydumper", args...)
 			if err != nil {
 				fmt.Printf("call ExecuteCommand failed. err: %s\n", err.Error())
