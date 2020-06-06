@@ -183,7 +183,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				continue
 			}
 
-			if !strings.EqualFold("exit status 1", output) {
+			if len(output) < 0 {
 				//修改状态，有问题，终止流程
 				initState = Failed
 				database.SetTaskStateAndMessageByUUID(db, uuid, "failed", string(output))
