@@ -124,7 +124,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				continue
 			} else {
 				args = append(args, "-p")
-				args = append(args, "'" + bi.Password + "'")
+				args = append(args, bi.Password)
 			}
 
 			//port
