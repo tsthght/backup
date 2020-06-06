@@ -150,7 +150,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			fmt.Printf("== rgs: as%v\n", args)
 			output, err := execute.ExecuteCommand(cfg.Task.Path, "mydumper", args...)
 			if err != nil {
-				fmt.Printf("call ExecuteCommand failed. err: %s\n", err.Error())
+				fmt.Printf("call ExecuteCommand failed. err: %s, %s\n", err.Error(), output)
 				db = database.GetMGRConnection(cluster, user, true)
 				if db == nil {
 					fmt.Printf("db is nil")

@@ -16,7 +16,7 @@ func ExecuteCommand(path, cmd string, args ...string) (string, error) {
 	exec.Stderr = &stderr
 	err := exec.Run()
 	if err != nil {
-		return "", err
+		return stderr.String(), err
 	}
 	return stderr.String(), nil
 }
