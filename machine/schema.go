@@ -106,7 +106,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				continue
 			} else {
 				idx := rand.Intn(len(bi.Hosts))
-				args = append(args, "-h " + bi.Hosts[idx])
+				args = append(args, " -h " + bi.Hosts[idx])
 			}
 			//user
 			if len(bi.User) == 0 {
