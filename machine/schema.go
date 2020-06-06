@@ -106,14 +106,16 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				continue
 			} else {
 				idx := rand.Intn(len(bi.Hosts))
-				args = append(args, " -h " + bi.Hosts[idx])
+				args = append(args, "-h")
+				args = append(args, bi.Hosts[idx])
 			}
 			//user
 			if len(bi.User) == 0 {
 				//应该报错
 				continue
 			} else {
-				args = append(args, " -u " + bi.User)
+				args = append(args, "-u")
+				args = append(args, bi.User)
 			}
 
 			//pwd
@@ -121,11 +123,13 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				//应该报错
 				continue
 			} else {
-				args = append(args, " -p " + "'" + bi.Password + "'")
+				args = append(args, "-p")
+				args = append(args, "'" + bi.Password + "'")
 			}
 
 			//port
-			args = append(args, " -P " + bi.Port)
+			args = append(args, "-P")
+			args = append(args, bi.Port)
 
 			//db tb
 			dbinfo, err := database.GetDBInfoByUUID(db, uuid)
@@ -135,20 +139,23 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 
 			if dbinfo != "" {
 				dbtb := strings.Split(dbinfo, ":")
-				args = append(args, " -B " + dbtb[0])
+				args = append(args, "-B")
+				args = append(args, dbtb[0])
 				if len(dbtb) == 2 && len(dbtb[1]) > 0 {
-					args = append(args, " -T " + dbtb[1])
+					args = append(args, "-T")
+					args = append(args, dbtb[1])
 				}
 			}
 
 			//path
-			args = append(args, " -o " + BKPATH)
+			args = append(args, "-o")
+			args = append(args, BKPATH)
 
 			db.Close()
 			fmt.Printf("## bi= %v\n", bi)
 			fmt.Printf("## before %v\n", time.Now())
 			fmt.Printf("== rgs: as%v\n", args)
-			output, err := execute.ExecuteCommand(cfg.Task.Path, "mydumper", strings.Join(args, " "))
+			output, err := execute.ExecuteCommand(cfg.Task.Path, "mydumper", args...)
 			if err != nil {
 				fmt.Printf("call ExecuteCommand failed. err: %s, %s\n", err.Error(), output)
 				db = database.GetMGRConnection(cluster, user, true)
