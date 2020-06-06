@@ -8,7 +8,7 @@ import (
 
 func ExecuteCommand(path, cmd string, args ...string) (string, error) {
 	name := path + "/" + cmd
-	fmt.Printf("== command path: %s\n", name)
+	fmt.Printf("== command path: %s, %v\n", name, args)
 	exec := exec.Command(name, args...)
 	var out bytes.Buffer
 	var stderr bytes.Buffer
