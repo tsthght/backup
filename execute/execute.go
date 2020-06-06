@@ -14,6 +14,9 @@ func ExecuteCommand(path, cmd string, args ...string) (string, error) {
 	var stderr bytes.Buffer
 	exec.Stdout = &out
 	exec.Stderr = &stderr
-	exec.Run()
+	err := exec.Run()
+	if err != nil {
+		return "", err
+	}
 	return stderr.String(), nil
 }
