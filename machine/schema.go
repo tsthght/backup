@@ -121,7 +121,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				//应该报错
 				continue
 			} else {
-				args = append(args, "-p " + bi.Password)
+				args = append(args, "-p " + "'" + bi.Password + "'")
 			}
 
 			//port
@@ -136,7 +136,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			if dbinfo != "" {
 				dbtb := strings.Split(dbinfo, ":")
 				args = append(args, "-B " + dbtb[0])
-				if len(dbtb) == 2 {
+				if len(dbtb) == 2 && len(dbtb[1]) > 0 {
 					args = append(args, "-T " + dbtb[1])
 				}
 			}
