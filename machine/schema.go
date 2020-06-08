@@ -146,6 +146,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			err := SetMachineStateByIp(cluster, user, ip, "idle")
 			if err != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
+				continue
 			}
 			// 直接返回
 			return
