@@ -130,6 +130,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			err := SetMachineStateByIp(cluster, user, ip, "reset_env")
 			if err != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
+				continue
 			}
 
 			err = SetTaskState(cluster, user, uuid, "failed", message)
