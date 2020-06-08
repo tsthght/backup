@@ -28,6 +28,7 @@ const (
 var BKState map[string]int
 
 func InitBKState() {
+	BKState = make(map[string]int)
 	BKState["todo"] = ToDo
 	BKState["prepare_env"] = PrepareEnv
 	BKState["pre_check"] = PreCheck
