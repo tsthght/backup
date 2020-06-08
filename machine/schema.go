@@ -34,45 +34,21 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			}
 			initState = PrepareEnv
 		case PrepareEnv:
-			fmt.Printf("state: prepare_env\n")
-			//更新状态
-			initState = PreCheck
-			db := database.GetMGRConnection(cluster, user, true)
-			if db == nil {
-				fmt.Printf("db is nil")
-				//应该限制次数的
-				continue
-			}
-			err := database.SetMachineStageByIp(db, ip, "pre_check")
+			err := SetMachineStateByIp(cluster, user, ip, "pre_check")
 			if err != nil {
-				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "pre_check")
+				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
 			}
-			db.Close()
-			time.Sleep(1 * time.Second)
-			fmt.Printf("current state: %d\n", initState)
-			//todo
+			initState = PreCheck
 		case PreCheck:
-			//没必要修改gc时间
-			fmt.Printf("state: pre_check\n")
+			//schema迁移，没必要修改gc时间
+			err := SetMachineStateByIp(cluster, user, ip, "dumping")
+			if err != nil {
+				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
+			}
 			//更新状态
 			initState = Dumping
-			db := database.GetMGRConnection(cluster, user, true)
-			if db == nil {
-				fmt.Printf("db is nil")
-				//应该限制次数的
-				continue
-			}
-			err := database.SetMachineStageByIp(db, ip, "dumping")
-			if err != nil {
-				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "dumping")
-			}
-			db.Close()
-			time.Sleep(1 * time.Second)
-			//todo
 		case Dumping:
-			//获取信息
-			fmt.Printf("state: dumping\n")
-
+			//调用dump
 			db := database.GetMGRConnection(cluster, user, true)
 			if db == nil {
 				fmt.Printf("db is nil")
@@ -147,50 +123,29 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			fmt.Printf("## before %v\n", time.Now())
 			fmt.Printf("== rgs: as%v\n", args)
 			output, err := execute.ExecuteCommand(cfg.Task.Path, "mydumper", args...)
-			if err != nil {
-				fmt.Printf("call ExecuteCommand failed. err: %s, %s\n", err.Error(), output)
-				db = database.GetMGRConnection(cluster, user, true)
-				if db == nil {
-					fmt.Printf("db is nil")
-					//应该限制次数的
+			if err != nil || len(output) > 0{
+				e := SetMachineStateByIp(cluster, user, ip, "failed")
+				if e != nil {
+					fmt.Printf("call SetMachineStateByIp failed. err : %s", e.Error())
 					continue
 				}
 				initState = Failed
-				fmt.Printf("change state to failed")
-				err = database.SetTaskStateAndMessageByUUID(db, uuid, "failed", err.Error())
-				if err != nil {
-					fmt.Printf("call SetTaskStateAndMessageByUUID failed. err: %s\n", err.Error())
+				e = SetTaskState(cluster, user, uuid, "failed", err.Error() + ";" + output)
+				if e != nil {
+					fmt.Printf("call SetTaskState faled. err : %s", e.Error())
+					continue
 				}
-				db.Close()
-				continue
 			}
 			fmt.Printf("## after %v\n", time.Now())
 			fmt.Printf("output: %s\n", string(output))
 
-			db = database.GetMGRConnection(cluster, user, true)
-			if db == nil {
-				fmt.Printf("db is nil")
-				//应该限制次数的
+			e := SetMachineStateByIp(cluster, user, ip, "loading")
+			if e != nil {
+				fmt.Printf("call SetMachineStateByIp failed. err : %s", e.Error())
 				continue
 			}
-
-			if len(output) > 0 {
-				//修改状态，有问题，终止流程
-				initState = Failed
-				database.SetTaskStateAndMessageByUUID(db, uuid, "failed", string(output))
-				db.Close()
-				continue
-			}
-
 			//更新状态
 			initState = Loading
-			err = database.SetMachineStageByIp(db, ip, "loading")
-			if err != nil {
-				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "loading")
-			}
-			db.Close()
-			time.Sleep(2 * time.Second)
-			//todo
 		case Loading:
 			fmt.Printf("state: loading\n")
 			//更新状态
