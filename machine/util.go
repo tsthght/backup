@@ -66,7 +66,7 @@ func SetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, c
 func GetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, cfg config.BkConfig) (error, string) {
 	db := database.GetMGRConnection(cluster, user, false)
 	if db == nil {
-		return errors.New("db is nil"), ""
+		return errors.New("mysql is nil"), ""
 	}
 
 	bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
@@ -77,7 +77,7 @@ func GetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, c
 	db.Close()
 	db = database.GetTiDBConnection(bi)
 	if db == nil {
-		return errors.New("db is nil"), ""
+		return errors.New("tidb is nil"), ""
 	}
 	return database.GetGCTimeByUUID(db)
 }
