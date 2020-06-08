@@ -2,6 +2,7 @@ package machine
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
@@ -75,6 +76,7 @@ func GetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, c
 		return err, ""
 	}
 	db.Close()
+	fmt.Printf("bi: %v\n", bi)
 	db = database.GetTiDBConnection(bi)
 	if db == nil {
 		return errors.New("tidb is nil"), ""
