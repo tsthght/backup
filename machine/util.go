@@ -18,7 +18,31 @@ const (
 	ResetEnv
 	Done
 	Failed
+
+	Pump
+	CheckPump
+	Drainer
+	CheckDrainer
 )
+
+var BKState map[string]int
+
+func InitBKState() {
+	BKState["todo"] = ToDo
+	BKState["prepare_env"] = PrepareEnv
+	BKState["pre_check"] = PreCheck
+	BKState["dumping"] = Dumping
+	BKState["loading"] = Loading
+	BKState["pos_check"] = PosCheck
+	BKState["reset_env"] = ResetEnv
+	BKState["done"] = Done
+	BKState["failed"] = Failed
+	BKState["pump"] = Pump
+	BKState["check_pump"] = CheckPump
+	BKState["drainer"] = Drainer
+	BKState["check_drainer"] = CheckDrainer
+}
+
 
 const (
 	BKPATH = "bk"

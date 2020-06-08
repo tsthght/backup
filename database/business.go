@@ -22,7 +22,7 @@ const (
 	doingTask_ssql = "update bk_task_info set state = 'doing' where uuid = ?"
 
 	gettaskUUIDasignedtomachine = "select task_id from bk_machine_info where ip = ?"
-	gettasktypebyUUID = "select task_type from bk_task_info where uuid = ?"
+	gettasktypebyUUID = "select task_type, stage from bk_task_info where uuid = ?"
 
 	getmachinestagebyip = "select stage from bk_machine_info where ip = ?"
 	setmachinestagebyip = "update bk_machine_info set stage = ? where ip = ?"
@@ -249,29 +249,30 @@ func SetMachineStageByIp(db *sql.DB, ip ,state string) error {
  * 作用：获取当前任务的类型type
  * 返回值："" or "schema" or "full" or "all"
  */
-func GetTaskTypeByUUID(db *sql.DB, uuid int) (string, error) {
+func GetTaskTypeByUUID(db *sql.DB, uuid int) (string, string, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return "", errors.New("call GetTaskTypeByUUID: tx Begin failed: " + err.Error())
+		return "", "", errors.New("call GetTaskTypeByUUID: tx Begin failed: " + err.Error())
 	}
 	rows, err := tx.Query(gettasktypebyUUID, uuid)
 	if err != nil {
-		return "", errors.New("call GetTaskTypeByUUID: tx Query failed: " + err.Error())
+		return "", "", errors.New("call GetTaskTypeByUUID: tx Query failed: " + err.Error())
 	}
 	tp := ""
+	stage := ""
 	for rows.Next() {
-		err := rows.Scan(&tp)
+		err := rows.Scan(&tp, &stage)
 		if err != nil {
 			rows.Close()
 			tx.Rollback()
-			return tp, errors.New("call GetTaskTypeByUUID: tx scan failed: " + err.Error())
+			return tp, stage, errors.New("call GetTaskTypeByUUID: tx scan failed: " + err.Error())
 		}
 		rows.Close()
 		break
 	}
 	rows.Close()
 	tx.Commit()
-	return tp, nil
+	return tp, stage, nil
 }
 
 /*

@@ -38,6 +38,7 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 			//获取任务类型和任务状态，设置状态各个部分用 协程
 			uuid := -1
 			tp := ""
+			sd := ""
 			var err error
 			db := database.GetMGRConnection(cluster, user, true)
 			if db == nil {
@@ -68,7 +69,7 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 					continue
 				}
 
-				tp, err = database.GetTaskTypeByUUID(db, uuid)
+				tp, sd, err = database.GetTaskTypeByUUID(db, uuid)
 				if err != nil {
 					fmt.Printf("GetTaskTypeByUUID failed: " + err.Error())
 					db.Close()
@@ -80,10 +81,10 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 			switch tp {
 			case "schema":
 				fmt.Printf("do schema logic\n")
-				machine.StateMachineSchema(cluster, user, cfg, machine.ToDo, ip, uuid, 0)
+				machine.StateMachineSchema(cluster, user, cfg, machine.BKState[sd], ip, uuid, 0)
 			case "full":
 				fmt.Printf("do full logic\n")
-				machine.StateMachineSchema(cluster, user, cfg, machine.ToDo, ip, uuid, 1)
+				machine.StateMachineSchema(cluster, user, cfg, machine.BKState[sd], ip, uuid, 1)
 			case "all":
 				fmt.Printf("do all logic\n")
 			default:

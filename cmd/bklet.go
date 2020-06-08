@@ -12,6 +12,7 @@ import (
 	"github.com/tsthght/backup/assign"
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
+	"github.com/tsthght/backup/machine"
 	"github.com/tsthght/backup/register"
 	"github.com/tsthght/backup/secret"
 	"github.com/tsthght/backup/status"
@@ -42,6 +43,9 @@ func main() {
 		WriteIndex: 0,
 	}
 	fmt.Printf("%v\n", mgrinfo)
+
+	//init state
+	machine.InitBKState()
 
 	//启动任务
 	wg := sync.WaitGroup{}
