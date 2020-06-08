@@ -151,6 +151,9 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			args = append(args, "-o")
 			args = append(args, BKPATH)
 
+			//no data
+			args = append(args, "-d")
+
 			db.Close()
 			fmt.Printf("## bi= %v\n", bi)
 			fmt.Printf("## before %v\n", time.Now())
