@@ -21,7 +21,7 @@ const (
 	Failed
 )
 
-func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int) {
+func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int, tp int) {
 	message := ""
 	for {
 		fmt.Printf("schema loop...\n")
@@ -47,7 +47,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			//更新状态
 			initState = Dumping
 		case Dumping:
-			err, args := PrepareDumpArgus(cluster, user, cfg, uuid, 0)
+			err, args := PrepareDumpArgus(cluster, user, cfg, uuid, tp)
 			if err != nil {
 				fmt.Printf("call PrepareDumpArgus failed. err : %s", err.Error())
 				continue

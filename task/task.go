@@ -80,9 +80,10 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 			switch tp {
 			case "schema":
 				fmt.Printf("do schema logic\n")
-				machine.StateMachineSchema(cluster, user, cfg, machine.ToDo, ip, uuid)
+				machine.StateMachineSchema(cluster, user, cfg, machine.ToDo, ip, uuid, 0)
 			case "full":
 				fmt.Printf("do full logic\n")
+				machine.StateMachineSchema(cluster, user, cfg, machine.ToDo, ip, uuid, 1)
 			case "all":
 				fmt.Printf("do all logic\n")
 			default:
