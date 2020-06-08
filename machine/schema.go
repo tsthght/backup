@@ -3,7 +3,6 @@ package machine
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
@@ -36,7 +35,6 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 					fmt.Printf("call SetClusterGC failed. err : %s", err.Error())
 					continue
 				}
-				time.Sleep(10 * time.Second)
 			}
 
 			err := SetMachineStateByIp(cluster, user, ip, "pre_check")
