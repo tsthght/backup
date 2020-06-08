@@ -88,7 +88,6 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 				fmt.Printf("do all logic\n")
 			default:
 				fmt.Printf("type is error\n")
-				db.Close()
 			}
 		}
 	}()
