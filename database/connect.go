@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"debug/dwarf"
 	"errors"
 	"fmt"
 	"math/rand"
