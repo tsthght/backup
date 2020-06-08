@@ -122,16 +122,7 @@ func GetTiDBConnection(cluster *BladeInfo) *sql.DB {
 	index := rand.Intn(l - 1)
 	for i := 0; i < l; i++ {
 		host := hosts[index%l]
-		addr, err := net.LookupAddr(host)
-		if err != nil {
-			fmt.Printf("call LookupAddr failed, err : %s", err.Error())
-			return nil
-		}
-		if len(addr) == 0 {
-			fmt.Printf("addr is nil")
-			return nil
-		}
-		ref := strings.Join([]string{cluster.User, ":", cluster.Password, "@tcp(",addr[0], ":", cluster.Port, ")/", cluster.Database, "?charset=utf8"}, "")
+		ref := strings.Join([]string{cluster.User, ":", cluster.Password, "@tcp(",host, ":", cluster.Port, ")/", cluster.Database, "?charset=utf8"}, "")
 		db, _ := sql.Open("mysql", ref)
 		if err := db.Ping(); err != nil {
 			index ++
