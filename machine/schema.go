@@ -28,23 +28,11 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 		fmt.Printf("schema loop...\n")
 		switch initState {
 		case ToDo :
-			fmt.Printf("state: todo\n")
-			//更新表里的状态
-			initState = PrepareEnv
-			db := database.GetMGRConnection(cluster, user, true)
-			if db == nil {
-				fmt.Printf("db is nil")
-				//应该限制次数的
-				continue
-			}
-			err := database.SetMachineStageByIp(db, ip, "prepare_env")
+			err := SetMachineStateByIp(cluster, user, ip, "prepare_env")
 			if err != nil {
-				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "prepare_env")
+				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
 			}
-			db.Close()
-			time.Sleep(1 * time.Second)
-			fmt.Printf("current state: %d\n", initState)
-			//todo
+			initState = PrepareEnv
 		case PrepareEnv:
 			fmt.Printf("state: prepare_env\n")
 			//更新状态
