@@ -15,6 +15,7 @@ type BladeInfo struct {
 	User string
 	Password string
 	Port string
+	Database string
 }
 
 type UserInfo struct {

@@ -2,9 +2,11 @@ package database
 
 import (
 	"database/sql"
+	"debug/dwarf"
 	"errors"
 	"fmt"
 	"math/rand"
+	"net"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -112,18 +114,20 @@ func getCurrentUUID(db *sql.DB) (error, string) {
 	return errors.New("unexpected error when call GetPrimaryUUID"), ""
 }
 
-func GetTiDBConnection(cluster *BladeInfo, userinfo UserInfo, writenode bool) *sql.DB {
-	ips := cluster.Hosts
+func GetTiDBConnection(cluster *BladeInfo) *sql.DB {
+	hosts := cluster.Hosts
 	l := 0
-	if l = len(ips); l == 0 {
+	if l = len(hosts); l == 0 {
 		return nil
 	}
 	index := rand.Intn(l - 1)
 	for i := 0; i < l; i++ {
-		ip := ips[index/l]
-		ref := strings.Join([]string{userinfo.Username, ":", userinfo.Password, "@tcp(",ip, ":", userinfo.Port, ")/", userinfo.Database, "?charset=utf8"}, "")
+		host := hosts[index%l]
+		addr, err := net.LookupAddr()
+		ref := strings.Join([]string{cluster.User, ":", cluster.Password, "@tcp(",ip, ":", cluster.Port, ")/", cluster.Database, "?charset=utf8"}, "")
 		db, _ := sql.Open("mysql", ref)
 		if err := db.Ping(); err != nil {
+			index ++
 			continue
 		} else {
 			return db

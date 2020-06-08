@@ -3,6 +3,7 @@ package machine
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
@@ -39,6 +40,15 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			}
 			initState = PreCheck
 		case PreCheck:
+			if tp != 0 {
+				//修改GC时间
+				err := SetClusterGC(cluster, user, uuid, cfg)
+				if err != nil {
+					fmt.Printf("call SetClusterGC failed. err : %s", err.Error())
+					continue
+				}
+				time.Sleep(1000 * time.Second)
+			}
 			//schema迁移，没必要修改gc时间
 			err := SetMachineStateByIp(cluster, user, ip, "dumping")
 			if err != nil {

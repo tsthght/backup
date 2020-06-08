@@ -3,6 +3,7 @@ package machine
 import (
 	"errors"
 
+	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
 )
 
@@ -36,4 +37,24 @@ func SetTaskState(cluster *database.MGRInfo, user database.UserInfo, uuid int, s
 	}
 	db.Close()
 	return nil
+}
+
+func SetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, cfg config.BkConfig) error {
+	db := database.GetMGRConnection(cluster, user, false)
+	if db == nil {
+		return errors.New("db is nil")
+	}
+
+	bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
+	if err != nil {
+		db.Close()
+		return err
+	}
+	db.Close()
+	db = database.GetTiDBConnection(bi)
+	if db == nil {
+		return errors.New("db is nil")
+	}
+	err = database.SetGCTimeByUUID(db, cfg.Task.DefaultGCTime)
+	return err
 }

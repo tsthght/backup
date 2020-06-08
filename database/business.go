@@ -36,6 +36,8 @@ const (
 	getdbinfobyuuid = "select dbinfo from bk_task_info where uuid = ?"
 
 	settaskstateandmessagebyuuid = "update bk_task_info set state = ?, error_message = ? where uuid = ?"
+
+	setgclifetime = "update mysql.tidb set VARIABLE_VALUE= ? where VARIABLE_NAME='tikv_gc_life_time'"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -394,6 +396,28 @@ func SetTaskStateAndMessageByUUID(db *sql.DB, uuid int, state, message string) e
 		return errors.New("call SetTaskStateAndMessageByUUID: tx Prepare failed")
 	}
 	_, err = stmt.Exec(state, message, uuid)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("call SetTaskStateAndMessageByUUID: tx Exec failed")
+	}
+	tx.Commit()
+	return nil
+}
+
+/*
+ * 作用：设置GC时间
+ */
+func SetGCTimeByUUID(db *sql.DB, gc int) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call SetGCTimeByUUID: tx Begin failed: " + err.Error())
+	}
+	stmt, err := tx.Prepare(setgclifetime)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("call SetTaskStateAndMessageByUUID: tx Prepare failed")
+	}
+	_, err = stmt.Exec(strconv.Itoa(gc) + "h")
 	if err != nil {
 		tx.Rollback()
 		return errors.New("call SetTaskStateAndMessageByUUID: tx Exec failed")
