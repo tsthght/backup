@@ -168,7 +168,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 
 			//清理
 			os.RemoveAll(cfg.Task.Path + "/" + BKPATH)
-			err := SetMachineStateByIp(cluster, user, ip, "idle")
+			err = SetMachineStateByIp(cluster, user, ip, "idle")
 			if err != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
 				continue
