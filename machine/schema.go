@@ -163,7 +163,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			}
 
 			initState = ResetEnv
-			return
+			continue
 		case ResetEnv:
 			//清理
 			os.RemoveAll(cfg.Task.Path + "/" + BKPATH)
