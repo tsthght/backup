@@ -85,7 +85,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				continue
 			}
 			output, err := execute.ExecuteCommand(cfg.Task.Path, "loader", args...)
-			if err != nil || len(output) > 0 {
+			if err != nil {
 				e := SetMachineStateByIp(cluster, user, ip, "failed")
 				if e != nil {
 					fmt.Printf("call SetMachineStateByIp failed. err : %s", e.Error())
