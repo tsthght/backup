@@ -2,9 +2,6 @@ package machine
 
 import (
 	"fmt"
-	"math/rand"
-	"strings"
-	"time"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
@@ -24,6 +21,7 @@ const (
 )
 
 func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int) {
+	message := ""
 	for {
 		fmt.Printf("schema loop...\n")
 		switch initState {
@@ -48,80 +46,11 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			//更新状态
 			initState = Dumping
 		case Dumping:
-			//调用dump
-			db := database.GetMGRConnection(cluster, user, true)
-			if db == nil {
-				fmt.Printf("db is nil")
-				//应该限制次数的
-				continue
-			}
-
-			bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
+			err, args := PrepareDumpArgus(cluster, user, cfg, uuid, 0)
 			if err != nil {
-				fmt.Printf("call GetCluserBasicInfo failed.\n")
-				db.Close()
-				continue
+				fmt.Printf("call PrepareDumpArgus failed. err : %s", err.Error())
 			}
 
-			var args []string = nil
-			//host
-			if len(bi.Hosts) == 0 {
-				//应该报错
-				continue
-			} else {
-				idx := rand.Intn(len(bi.Hosts))
-				args = append(args, "-h")
-				args = append(args, bi.Hosts[idx])
-			}
-			//user
-			if len(bi.User) == 0 {
-				//应该报错
-				continue
-			} else {
-				args = append(args, "-u")
-				args = append(args, bi.User)
-			}
-
-			//pwd
-			if len(bi.Password) == 0 {
-				//应该报错
-				continue
-			} else {
-				args = append(args, "-p")
-				args = append(args, bi.Password)
-			}
-
-			//port
-			args = append(args, "-P")
-			args = append(args, bi.Port)
-
-			//db tb
-			dbinfo, err := database.GetDBInfoByUUID(db, uuid)
-			if err != nil {
-				fmt.Printf("call GetDBInfoByUUID failed. error: %s\n", err.Error())
-			}
-
-			if dbinfo != "" {
-				dbtb := strings.Split(dbinfo, ":")
-				args = append(args, "-B")
-				args = append(args, dbtb[0])
-				if len(dbtb) == 2 && len(dbtb[1]) > 0 {
-					args = append(args, "-T")
-					args = append(args, dbtb[1])
-				}
-			}
-
-			//path
-			args = append(args, "-o")
-			args = append(args, BKPATH)
-
-			//no data
-			args = append(args, "-d")
-
-			db.Close()
-			fmt.Printf("## bi= %v\n", bi)
-			fmt.Printf("## before %v\n", time.Now())
-			fmt.Printf("== rgs: as%v\n", args)
 			output, err := execute.ExecuteCommand(cfg.Task.Path, "mydumper", args...)
 			if err != nil || len(output) > 0{
 				e := SetMachineStateByIp(cluster, user, ip, "failed")
@@ -129,15 +58,16 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 					fmt.Printf("call SetMachineStateByIp failed. err : %s", e.Error())
 					continue
 				}
-				initState = Failed
-				e = SetTaskState(cluster, user, uuid, "failed", err.Error() + ";" + output)
-				if e != nil {
-					fmt.Printf("call SetTaskState faled. err : %s", e.Error())
-					continue
+				message = ""
+				if err != nil {
+					message += err.Error()
 				}
+				if len(output) > 0 {
+					message += output
+				}
+				initState = Failed
+				continue
 			}
-			fmt.Printf("## after %v\n", time.Now())
-			fmt.Printf("output: %s\n", string(output))
 
 			e := SetMachineStateByIp(cluster, user, ip, "loading")
 			if e != nil {
@@ -176,6 +106,13 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			if err != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
 			}
+
+			err = SetTaskState(cluster, user, uuid, "failed", message)
+			if err != nil {
+				fmt.Printf("call SetTaskState faled. err : %s", err.Error())
+				continue
+			}
+
 			initState = ResetEnv
 			return
 		case ResetEnv:
