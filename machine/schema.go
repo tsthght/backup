@@ -24,6 +24,7 @@ const (
 
 func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int, tp int) {
 	message := ""
+	gctime := ""
 	for {
 		fmt.Printf("schema loop...\n")
 		switch initState {
@@ -41,13 +42,19 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			initState = PreCheck
 		case PreCheck:
 			if tp != 0 {
+				err, gc := GetClusterGC(cluster, user, uuid, cfg)
+				if err != nil {
+					fmt.Printf("call GetClusterGC failed. err : %s", err.Error())
+					continue
+				}
+				gctime = gc
 				//修改GC时间
-				err := SetClusterGC(cluster, user, uuid, cfg)
+				err = SetClusterGC(cluster, user, uuid, cfg, "168h")
 				if err != nil {
 					fmt.Printf("call SetClusterGC failed. err : %s", err.Error())
 					continue
 				}
-				time.Sleep(1000 * time.Second)
+				time.Sleep(10 * time.Second)
 			}
 			//schema迁移，没必要修改gc时间
 			err := SetMachineStateByIp(cluster, user, ip, "dumping")
@@ -119,7 +126,13 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			//更新状态
 			initState = PosCheck
 		case PosCheck:
-			err := SetMachineStateByIp(cluster, user, ip, "done")
+			//修改GC时间
+			err := SetClusterGC(cluster, user, uuid, cfg, gctime)
+			if err != nil {
+				fmt.Printf("call SetClusterGC failed. err : %s", err.Error())
+				continue
+			}
+			err = SetMachineStateByIp(cluster, user, ip, "done")
 			if err != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
 			}

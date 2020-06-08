@@ -24,7 +24,7 @@ type BladeConfig struct {
 
 type TASK struct {
 	Path string                  `toml:"path" json:"path"`
-	DefaultGCTime int            `toml:"default-gc" json:"default-gc"`
+	DefaultGCTime string         `toml:"default-gc" json:"default-gc"`
 }
 
 type BkConfig struct {

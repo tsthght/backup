@@ -38,6 +38,8 @@ const (
 	settaskstateandmessagebyuuid = "update bk_task_info set state = ?, error_message = ? where uuid = ?"
 
 	setgclifetime = "update mysql.tidb set VARIABLE_VALUE= ? where VARIABLE_NAME='tikv_gc_life_time'"
+
+	getgclifetime = "select VARIABLE_VALUE from mysql.tidb where VARIABLE_NAME = 'tikv_gc_life_time'"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -407,7 +409,7 @@ func SetTaskStateAndMessageByUUID(db *sql.DB, uuid int, state, message string) e
 /*
  * 作用：设置GC时间
  */
-func SetGCTimeByUUID(db *sql.DB, gc int) error {
+func SetGCTimeByUUID(db *sql.DB, gc string) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return errors.New("call SetGCTimeByUUID: tx Begin failed: " + err.Error())
@@ -417,11 +419,39 @@ func SetGCTimeByUUID(db *sql.DB, gc int) error {
 		tx.Rollback()
 		return errors.New("call SetTaskStateAndMessageByUUID: tx Prepare failed")
 	}
-	_, err = stmt.Exec(strconv.Itoa(gc) + "h")
+	_, err = stmt.Exec(gc)
 	if err != nil {
 		tx.Rollback()
 		return errors.New("call SetTaskStateAndMessageByUUID: tx Exec failed")
 	}
 	tx.Commit()
 	return nil
+}
+
+/*
+ * 作用：查找GC时间
+ */
+func GetGCTimeByUUID(db *sql.DB) (error, string) {
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call SetGCTimeByUUID: tx Begin failed: " + err.Error()), ""
+	}
+	rows, err := tx.Query(getgclifetime)
+	if err != nil {
+		return errors.New("call GetDBInfoByUUID: tx Query failed: " + err.Error()), ""
+	}
+	gc := ""
+	for rows.Next() {
+		err := rows.Scan(&gc)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return errors.New("call GetDBInfoByUUID: tx scan failed: " + err.Error()), gc
+		}
+		rows.Close()
+		break
+	}
+	rows.Close()
+	tx.Commit()
+	return nil, gc
 }

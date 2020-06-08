@@ -39,7 +39,7 @@ func SetTaskState(cluster *database.MGRInfo, user database.UserInfo, uuid int, s
 	return nil
 }
 
-func SetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, cfg config.BkConfig) error {
+func SetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, cfg config.BkConfig, gc string) error {
 	db := database.GetMGRConnection(cluster, user, false)
 	if db == nil {
 		return errors.New("db is nil")
@@ -55,6 +55,29 @@ func SetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, c
 	if db == nil {
 		return errors.New("db is nil")
 	}
-	err = database.SetGCTimeByUUID(db, cfg.Task.DefaultGCTime)
+	if len(gc) > 0 {
+		err = database.SetGCTimeByUUID(db, gc)
+	} else {
+		err = database.SetGCTimeByUUID(db, cfg.Task.DefaultGCTime)
+	}
 	return err
+}
+
+func GetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, cfg config.BkConfig) (error, string) {
+	db := database.GetMGRConnection(cluster, user, false)
+	if db == nil {
+		return errors.New("db is nil"), ""
+	}
+
+	bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
+	if err != nil {
+		db.Close()
+		return err, ""
+	}
+	db.Close()
+	db = database.GetTiDBConnection(bi)
+	if db == nil {
+		return errors.New("db is nil"), ""
+	}
+	return database.GetGCTimeByUUID(db)
 }
