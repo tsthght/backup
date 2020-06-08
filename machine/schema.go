@@ -29,7 +29,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 		switch initState {
 		case ToDo :
 			fmt.Printf("state: todo\n")
-			//更新状态
+			//更新表里的状态
 			initState = PrepareEnv
 			db := database.GetMGRConnection(cluster, user, true)
 			if db == nil {
@@ -42,7 +42,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "prepare_env")
 			}
 			db.Close()
-			time.Sleep(2 * time.Second)
+			time.Sleep(1 * time.Second)
 			fmt.Printf("current state: %d\n", initState)
 			//todo
 		case PrepareEnv:
@@ -60,7 +60,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "pre_check")
 			}
 			db.Close()
-			time.Sleep(2 * time.Second)
+			time.Sleep(1 * time.Second)
 			fmt.Printf("current state: %d\n", initState)
 			//todo
 		case PreCheck:
@@ -79,7 +79,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				fmt.Printf("call SetMachineStageByIp(%s, %s) failed\n", ip, "dumping")
 			}
 			db.Close()
-			time.Sleep(2 * time.Second)
+			time.Sleep(1 * time.Second)
 			//todo
 		case Dumping:
 			//获取信息
@@ -183,7 +183,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				continue
 			}
 
-			if len(output) < 0 {
+			if len(output) > 0 {
 				//修改状态，有问题，终止流程
 				initState = Failed
 				database.SetTaskStateAndMessageByUUID(db, uuid, "failed", string(output))
