@@ -10,7 +10,7 @@ import (
 	"github.com/tsthght/backup/execute"
 )
 
-func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int, tp int) {
+func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int, tp int) {
 	message := ""
 	gctime := ""
 	for {

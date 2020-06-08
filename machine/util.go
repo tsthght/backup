@@ -9,6 +9,18 @@ import (
 )
 
 const (
+	ToDo = iota
+	PrepareEnv
+	PreCheck
+	Dumping
+	Loading
+	PosCheck
+	ResetEnv
+	Done
+	Failed
+)
+
+const (
 	BKPATH = "bk"
 )
 
