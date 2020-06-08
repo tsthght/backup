@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"net"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
