@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
@@ -166,6 +167,7 @@ func PreparePumpArgus(cluster *database.MGRInfo, user database.UserInfo, cfg con
 		root = append(root, "http://" + v + ":2379")
 	}
 	fmt.Printf("root: %v\n", root)
+	time.Sleep(10 * time.Second)
 	urls := strings.Join(root, ",")
 	args = append(args, urls)
 	//data-dir
