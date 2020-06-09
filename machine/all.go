@@ -58,10 +58,10 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 				continue
 			}
 			//阻塞
-			_, err = execute.ExecuteCommand(cfg.Task.Path, "pump", args...)
+			output, err := execute.ExecuteCommand(cfg.Task.Path, "pump", args...)
 			if err != nil {
 				//忽略错误
-				fmt.Printf("call ExecuteCommand failed. error : %s", err.Error())
+				fmt.Printf("call ExecuteCommand failed. error : %s, message : %s", err.Error(), output)
 			}
 			os.Remove(cfg.Task.Path + "/" + "pump.log")
 			os.Remove(cfg.Task.Path + "/" + "data.pump")

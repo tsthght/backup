@@ -2,6 +2,7 @@ package machine
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"strings"
 
@@ -164,6 +165,7 @@ func PreparePumpArgus(cluster *database.MGRInfo, user database.UserInfo, cfg con
 	for _, v := range bi.ROOT {
 		root = append(root, "http://" + v + ":2379")
 	}
+	fmt.Printf("root: %v\n", root)
 	urls := strings.Join(root, ",")
 	args = append(args, urls)
 	//data-dir
