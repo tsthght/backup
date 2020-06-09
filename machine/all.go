@@ -28,6 +28,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 				fmt.Printf("call GetMachineNumByUUID failed. err : %s", err.Error())
 				continue
 			}
+			fmt.Printf("current num: %d, default num: %d\n", num, cfg.Task.DefaultPump)
 			if num >= cfg.Task.DefaultPump {
 				//更新状态为 修改配置文件
 				err := SetTaskState(cluster, user, uuid, "todo", "rolling_sql", "")
