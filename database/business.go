@@ -371,7 +371,7 @@ func GetCluserBasicInfo(db *sql.DB, uuid int, cfg config.BkConfig, tp int) (*Bla
 			tx.Rollback()
 			return nil, errors.New("call GetTaskTypeByUUID: tx scan failed: " + err.Error())
 		}
-		bi.Hosts = append(bi.ROOT, rootnode)
+		bi.ROOT = append(bi.ROOT, rootnode)
 	}
 	rows.Close()
 
