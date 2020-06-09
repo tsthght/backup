@@ -355,6 +355,7 @@ func GetCluserBasicInfo(db *sql.DB, uuid int, cfg config.BkConfig, tp int) (*Bla
 		}
 		bi.Hosts = append(bi.Hosts, sqlnode)
 	}
+	rows.Close()
 
 	rows, err = tx.Query(getrootnode, cluster)
 	fmt.Printf("get root, cluster : %s\n", cluster)
@@ -372,7 +373,6 @@ func GetCluserBasicInfo(db *sql.DB, uuid int, cfg config.BkConfig, tp int) (*Bla
 		}
 		bi.Hosts = append(bi.ROOT, rootnode)
 	}
-
 	rows.Close()
 
 	tx.Commit()
