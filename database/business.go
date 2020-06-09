@@ -357,6 +357,7 @@ func GetCluserBasicInfo(db *sql.DB, uuid int, cfg config.BkConfig, tp int) (*Bla
 	}
 
 	rows, err = tx.Query(getrootnode, cluster)
+	fmt.Printf("get root, cluster : %s\n", cluster)
 	if err != nil {
 		return nil, errors.New("call GetTaskTypeByUUID: tx Query failed: " + err.Error())
 	}
