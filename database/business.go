@@ -44,6 +44,8 @@ const (
 	getgclifetime = "select VARIABLE_VALUE from mysql.tidb where VARIABLE_NAME = 'tikv_gc_life_time'"
 
 	getmachinenum = "select ip from bk_machine_info where task_id = ? and stage = ?"
+
+	getsrcclustername = "select src from bk_task_info where uuid = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -498,4 +500,58 @@ func GetMachineNum(db *sql.DB, uuid int, stage string) (error, int){
 	rows.Close()
 	tx.Commit()
 	return nil, num
+}
+/*
+ * 根据UUID获取pump的数量
+ */
+func GetMachinePumpIpByPump(db *sql.DB, uuid int, stage string) (error, []string){
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call SetGCTimeByUUID: tx Begin failed: " + err.Error()), nil
+	}
+	rows, err := tx.Query(getmachinenum, uuid, stage)
+	if err != nil {
+		return errors.New("call GetDBInfoByUUID: tx Query failed: " + err.Error()), nil
+	}
+	var hosts []string
+	host := ""
+	for rows.Next() {
+		err := rows.Scan(&host)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return errors.New("call GetSrcClusterName: tx scan failed: " + err.Error()), hosts
+		}
+		hosts = append(hosts, host)
+	}
+	rows.Close()
+	tx.Commit()
+	return nil, hosts
+}
+/*
+ * 根据UUID获取集群名
+ */
+func GetSrcClusterName(db *sql.DB, uuid int) (error, string) {
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call GetSrcClusterName: tx Begin failed: " + err.Error()), ""
+	}
+	rows, err := tx.Query(getsrcclustername, uuid)
+	if err != nil {
+		return errors.New("call GetSrcClusterName: tx Query failed: " + err.Error()), ""
+	}
+	src := ""
+	for rows.Next() {
+		err := rows.Scan(&src)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return errors.New("call GetSrcClusterName: tx scan failed: " + err.Error()), src
+		}
+		rows.Close()
+		break
+	}
+	rows.Close()
+	tx.Commit()
+	return nil, src
 }

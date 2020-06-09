@@ -22,9 +22,12 @@ const (
 
 	Pump
 	RollingSQL
+	AddPump
 	OpenBinlog
 	Drainer
 	CheckDrainer
+	AddDrainer
+	RollingMonitor
 )
 
 var BKState map[string]int
@@ -45,6 +48,9 @@ func InitBKState() {
 	BKState["drainer"] = Drainer
 	BKState["check_drainer"] = CheckDrainer
 	BKState["rolling_sql"] = RollingSQL
+	BKState["add_pump"] = AddPump
+	BKState["add_drainer"] = AddDrainer
+	BKState["rolling_monitor"] = RollingMonitor
 }
 
 
@@ -151,4 +157,24 @@ func GetLocalIP() (error, string) {
 		}
 	}
 	return errors.New("can not get local ip"), ""
+}
+
+func GetSrcClusterNameByUUID(cluster *database.MGRInfo, user database.UserInfo, uuid int) (error, string) {
+	db := database.GetMGRConnection(cluster, user, false)
+	if db == nil {
+		return errors.New("mysql is nil"), ""
+	}
+	err, src := database.GetSrcClusterName(db, uuid)
+	db.Close()
+	return err, src
+}
+
+func GetMachinePumpIpByUUID(cluster *database.MGRInfo, user database.UserInfo, uuid int, stage string) (error, []string) {
+	db := database.GetMGRConnection(cluster, user, false)
+	if db == nil {
+		return errors.New("mysql is nil"), nil
+	}
+	err, pumplist := database.GetMachinePumpIpByPump(db, uuid, stage)
+	db.Close()
+	return err, pumplist
 }
