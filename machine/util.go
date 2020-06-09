@@ -20,6 +20,7 @@ const (
 	Failed
 
 	Pump
+	RollingSQL
 	OpenBinlog
 	Drainer
 	CheckDrainer
@@ -42,6 +43,7 @@ func InitBKState() {
 	BKState["open_binlog"] = OpenBinlog
 	BKState["drainer"] = Drainer
 	BKState["check_drainer"] = CheckDrainer
+	BKState["rolling_sql"] = RollingSQL
 }
 
 
@@ -118,5 +120,34 @@ func GetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, c
 	if db == nil {
 		return errors.New("tidb is nil"), ""
 	}
-	return database.GetGCTimeByUUID(db)
+	err, str := database.GetGCTimeByUUID(db)
+	db.Close()
+	return err, str
+}
+
+func GetMachineNumByUUID(cluster *database.MGRInfo, user database.UserInfo, uuid int, stage string) (error, int) {
+	db := database.GetMGRConnection(cluster, user, false)
+	if db == nil {
+		return errors.New("mysql is nil"), 0
+	}
+	err, num := database.GetMachineNum(db, uuid, stage)
+	db.Close()
+	return err, num
+}
+
+func GetLocalIP() (error, string) {
+	addrs, err := net.InterfaceAddrs()
+
+	if err != nil {
+		return err, ""
+	}
+
+	for _, address := range addrs {
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return nil, ipnet.IP.String()
+			}
+		}
+	}
+	return errors.New("can not get local ip"), ""
 }

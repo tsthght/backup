@@ -33,6 +33,8 @@ const (
 
 	getsqlnode = "select hostname from bladecmdb.blade_sql where physical_cluster_name = ?"
 
+	getrootnode = "select hostname from bladecmdb.blade_root where physical_cluster_name = ?"
+
 	getdbinfobyuuid = "select dbinfo from bk_task_info where uuid = ?"
 
 	settaskstateandmessagebyuuid = "update bk_task_info set state = ?, stage = ?, error_message = ? where uuid = ?"
@@ -40,6 +42,8 @@ const (
 	setgclifetime = "update mysql.tidb set VARIABLE_VALUE= ? where VARIABLE_NAME='tikv_gc_life_time'"
 
 	getgclifetime = "select VARIABLE_VALUE from mysql.tidb where VARIABLE_NAME = 'tikv_gc_life_time'"
+
+	getmachinenum = "select ip from bk_machine_info where task_id = ? and stage = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -351,6 +355,23 @@ func GetCluserBasicInfo(db *sql.DB, uuid int, cfg config.BkConfig, tp int) (*Bla
 		}
 		bi.Hosts = append(bi.Hosts, sqlnode)
 	}
+
+	rows, err = tx.Query(getrootnode, cluster)
+	if err != nil {
+		return nil, errors.New("call GetTaskTypeByUUID: tx Query failed: " + err.Error())
+	}
+
+	var rootnode string
+	for rows.Next() {
+		err := rows.Scan(&rootnode)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return nil, errors.New("call GetTaskTypeByUUID: tx scan failed: " + err.Error())
+		}
+		bi.Hosts = append(bi.ROOT, rootnode)
+	}
+
 	rows.Close()
 
 	tx.Commit()
@@ -455,4 +476,25 @@ func GetGCTimeByUUID(db *sql.DB) (error, string) {
 	rows.Close()
 	tx.Commit()
 	return nil, gc
+}
+
+/*
+ * 根据UUID判断执行的数量
+ */
+func GetMachineNum(db *sql.DB, uuid int, stage string) (error, int){
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call SetGCTimeByUUID: tx Begin failed: " + err.Error()), 0
+	}
+	rows, err := tx.Query(getmachinenum, uuid, stage)
+	if err != nil {
+		return errors.New("call GetDBInfoByUUID: tx Query failed: " + err.Error()), 0
+	}
+	num := 0
+	for rows.Next() {
+		num ++
+	}
+	rows.Close()
+	tx.Commit()
+	return nil, num
 }

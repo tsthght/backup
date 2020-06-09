@@ -12,6 +12,7 @@ type MGRInfo struct {
 
 type BladeInfo struct {
 	Hosts []string
+	ROOT []string
 	User string
 	Password string
 	Port string

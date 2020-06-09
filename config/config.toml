@@ -13,6 +13,7 @@ cmdb_db = "backupnetes"
 [task]
 path = "/opt/"
 default-gc = "168h"
+default-pump = 2
 [blade]
 bladeappkey = "test.test"
 bladeuser = "admin"

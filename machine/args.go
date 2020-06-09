@@ -133,3 +133,48 @@ func PrepareLoadArgus(cluster *database.MGRInfo, user database.UserInfo, cfg con
 	db.Close()
 	return nil, args
 }
+
+func PreparePumpArgus(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, uuid int) (error, []string) {
+	db := database.GetMGRConnection(cluster, user, true)
+	if db == nil {
+		return errors.New("db is nil"), nil
+	}
+
+	bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.DownStream)
+	if err != nil {
+		db.Close()
+		return err, nil
+	}
+	db.Close()
+
+	var args []string = nil
+	//addr
+	args = append(args, "-addr")
+	args = append(args, "0.0.0.0:8250")
+	//advertise-addr
+	args = append(args, "-advertise-addr")
+	err, ip := GetLocalIP()
+	if err != nil {
+		return err, nil
+	}
+	args = append(args, ip+ ":8250")
+	//root
+	args = append(args, "-pd-urls")
+	var root []string
+	for _, v := range bi.ROOT {
+		root = append(root, "http://" + v + ":2379")
+	}
+	urls := strings.Join(root, ",")
+	args = append(args, urls)
+	//data-dir
+	args = append(args, "-data-dir")
+	args = append(args, "data.pump")
+	//log-file
+	args = append(args, "-log-file")
+	args = append(args, "pump.log")
+	//config
+	args = append(args, "-config")
+	args = append(args, "pump.toml")
+
+	return nil, args
+}
