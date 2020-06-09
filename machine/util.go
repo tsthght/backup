@@ -3,6 +3,7 @@ package machine
 import (
 	"errors"
 	"fmt"
+	"net"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
