@@ -10,8 +10,7 @@ import (
 )
 
 func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int, tp int) {
-	message := ""
-	gctime := ""
+
 	for {
 		fmt.Printf("schema loop...\n")
 		switch initState {
