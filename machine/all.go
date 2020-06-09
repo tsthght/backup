@@ -118,7 +118,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 			if err != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
 			}
-			err = SetTaskState(cluster, user, uuid, "success", "")
+			err = SetTaskState(cluster, user, uuid, "success", "loader", "")
 			if err != nil {
 				fmt.Printf("call SetTaskState failed. err : %s", err.Error())
 			}
@@ -131,7 +131,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 				continue
 			}
 
-			err = SetTaskState(cluster, user, uuid, "failed", message)
+			err = SetTaskState(cluster, user, uuid, "failed", "loader", message)
 			if err != nil {
 				fmt.Printf("call SetTaskState faled. err : %s", err.Error())
 				continue
