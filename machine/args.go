@@ -142,7 +142,7 @@ func PreparePumpArgus(cluster *database.MGRInfo, user database.UserInfo, cfg con
 		return errors.New("db is nil"), nil
 	}
 
-	bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.DownStream)
+	bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
 	if err != nil {
 		db.Close()
 		return err, nil
