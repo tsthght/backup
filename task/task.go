@@ -87,6 +87,7 @@ func Task(quit <-chan time.Time, wg *sync.WaitGroup, rate int, cluster *database
 				machine.StateMachineSchema(cluster, user, cfg, machine.BKState[sd], ip, uuid, 1)
 			case "all":
 				fmt.Printf("do all logic\n")
+				machine.StateMachineAll(cluster, user, cfg, machine.BKState[sd], ip, uuid)
 			default:
 				fmt.Printf("type is error\n")
 			}

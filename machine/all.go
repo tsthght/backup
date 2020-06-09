@@ -9,7 +9,7 @@ import (
 	"github.com/tsthght/backup/execute"
 )
 
-func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int, tp int) {
+func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int) {
 
 	for {
 		fmt.Printf("schema loop...\n")
