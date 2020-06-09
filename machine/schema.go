@@ -123,7 +123,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			if err != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
 			}
-			err = SetTaskState(cluster, user, uuid, "success", "")
+			err = SetTaskState(cluster, user, uuid, "success", "dump", "")
 			if err != nil {
 				fmt.Printf("call SetTaskState failed. err : %s", err.Error())
 			}
@@ -136,7 +136,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				continue
 			}
 
-			err = SetTaskState(cluster, user, uuid, "failed", message)
+			err = SetTaskState(cluster, user, uuid, "failed", "", message)
 			if err != nil {
 				fmt.Printf("call SetTaskState faled. err : %s", err.Error())
 				continue

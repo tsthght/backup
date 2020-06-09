@@ -20,7 +20,7 @@ const (
 	Failed
 
 	Pump
-	CheckPump
+	OpenBinlog
 	Drainer
 	CheckDrainer
 )
@@ -39,7 +39,7 @@ func InitBKState() {
 	BKState["done"] = Done
 	BKState["failed"] = Failed
 	BKState["pump"] = Pump
-	BKState["check_pump"] = CheckPump
+	BKState["open_binlog"] = OpenBinlog
 	BKState["drainer"] = Drainer
 	BKState["check_drainer"] = CheckDrainer
 }
@@ -63,12 +63,12 @@ func SetMachineStateByIp(cluster *database.MGRInfo, user database.UserInfo, ip, 
 	return nil
 }
 
-func SetTaskState(cluster *database.MGRInfo, user database.UserInfo, uuid int, state, message string) error {
+func SetTaskState(cluster *database.MGRInfo, user database.UserInfo, uuid int, state, stage, message string) error {
 	db := database.GetMGRConnection(cluster, user, true)
 	if db == nil {
 		return errors.New("db is nil")
 	}
-	err := database.SetTaskStateAndMessageByUUID(db, uuid, state, message)
+	err := database.SetTaskStateAndMessageByUUID(db, uuid, state, stage, message)
 	if err != nil {
 		db.Close()
 		return err

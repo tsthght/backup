@@ -3,7 +3,6 @@ package machine
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
@@ -16,33 +15,27 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 	for {
 		fmt.Printf("schema loop...\n")
 		switch initState {
-		case ToDo :
-			err := SetMachineStateByIp(cluster, user, ip, "prepare_env")
+		case Pump:
+			//修改自己状态为pump
+			err := SetMachineStateByIp(cluster, user, ip, "pump")
 			if err != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
+				continue
 			}
-			initState = PrepareEnv
-		case PrepareEnv:
-			if tp != 0 {
-				err, gc := GetClusterGC(cluster, user, uuid, cfg)
-				if err != nil {
-					fmt.Printf("call GetClusterGC failed. err : %s", err.Error())
-					continue
-				}
-				gctime = gc
-				//修改GC时间
-				err = SetClusterGC(cluster, user, uuid, cfg, "168h")
-				if err != nil {
-					fmt.Printf("call SetClusterGC failed. err : %s", err.Error())
-					continue
-				}
-				time.Sleep(10 * time.Second)
-			}
+			//修改task状态为todo或者为open_binlog
+			//如果pump数量够，就设置为open_binlog，不够就设置为(todo, pump)
 
-			err := SetMachineStateByIp(cluster, user, ip, "pre_check")
-			if err != nil {
-				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
-			}
+			//启动pump,阻塞
+
+			//修改改machine状态
+			initState = Done
+		case OpenBinlog:
+			//修改自己状态为openbinlog
+			//修改任务状态(doing,open_binlog)
+			//调用接口
+			//周期性检查是否打开
+
+			//确认打开后，更新状态
 			initState = PreCheck
 		case PreCheck:
 			err := SetMachineStateByIp(cluster, user, ip, "dumping")
