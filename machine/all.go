@@ -79,13 +79,11 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 				continue
 			}
 		case OpenBinlog:
-			//修改自己状态为openbinlog
-			//修改任务状态(doing,open_binlog)
-			//调用接口
-			//周期性检查是否打开
+			//写配置文件
 
-			//确认打开后，更新状态
-			initState = PreCheck
+			//开启binlog
+
+			//检查是否开启binlog
 		default:
 			fmt.Printf("state is error\n")
 			return
