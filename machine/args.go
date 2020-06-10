@@ -75,6 +75,9 @@ func PrepareDumpArgus(cluster *database.MGRInfo, user database.UserInfo, cfg con
 
 	//chunk
 	args = append(args, "-F")
+	if cfg.Task.DefaultDumpChunkSize <= 0 {
+		cfg.Task.DefaultDumpChunkSize = 1
+	}
 	args = append(args, strconv.Itoa(cfg.Task.DefaultDumpChunkSize))
 
 	//path
@@ -135,7 +138,10 @@ func PrepareLoadArgus(cluster *database.MGRInfo, user database.UserInfo, cfg con
 
 	//thread
 	args = append(args, "-t")
-	args = append(args, "128")
+	if cfg.Task.DefaultLoaderThread <= 0 {
+		cfg.Task.DefaultLoaderThread= 128
+	}
+	args = append(args, strconv.Itoa(cfg.Task.DefaultLoaderThread))
 
 	//path
 	args = append(args, "-d")

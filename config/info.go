@@ -29,6 +29,7 @@ type TASK struct {
 	DefaultMaxExecuteTime int    `toml:"max-execute-time" json:"max-execute-time"`
 	NotDeleteDumpFile int        `toml:"not-delete-dump-file" json:"not-delete-dump-file"`
 	DefaultDumpChunkSize int     `toml:"default-dump-chunksize" json:"default-dump-chunksize"`
+	DefaultLoaderThread int      `toml:"default-loader-thread" json:"default-loader-thread"`
 }
 
 type BkConfig struct {
