@@ -218,7 +218,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 
 			return
 		case Drainer:
-
+			fmt.Print("%s", gc)
 		case AddDrainer:
 
 		case RollingMonitor:
