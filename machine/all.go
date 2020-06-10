@@ -13,7 +13,7 @@ import (
 )
 
 func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int) {
-
+	gctime := ""
 	for {
 		fmt.Printf("schema loop...\n")
 		switch initState {
@@ -79,8 +79,9 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 			err = SetMachineStateByIp(cluster, user, ip, "idle")
 			if err != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
-				continue
+				return
 			}
+			return
 		case AddPump:
 			//修改任务状态为 (doing, pump)
 			err := SetTaskState(cluster, user, uuid, "doing", "add_pump", "")
@@ -122,10 +123,100 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 				fmt.Printf("call SetTaskState failed. err : %s", err.Error())
 				continue
 			}
+			return
 		case OpenBinlog:
+			//修改任务状态为 (doing, pump)
+			err := SetTaskState(cluster, user, uuid, "doing", "open_binlog", "")
+			if err != nil {
+				fmt.Printf("call SetTaskState faled. err : %s", err.Error())
+				continue
+			}
+			//获取src
+			err, src := GetSrcClusterNameByUUID(cluster, user, uuid)
+			if err != nil {
+				fmt.Printf("call GetSrcClusterNameByUUID failed. err : %s\n", err.Error())
+				continue
+			}
+			err = http.SetBinglogEnable(cfg.Api.ConfigBinlog, "product", src, "person", true)
+			if err != nil {
+				fmt.Printf("call SetBinglogEnable failed. err : %s\n", err.Error())
+				continue
+			}
+			time.Sleep(2 * time.Second)
+			binlog := 0
+			i := 5
+			for i = 5; i>0; i-- {
+				//检查是否开启binlog
+				err, binlog = IsBinlogOpen(cluster, user, uuid, cfg)
+				if err != nil {
+					fmt.Printf("call IsBinlogOpen failed. err : %s\n", err.Error())
+					time.Sleep(2 * time.Second)
+				}
+			}
+			if i == 0 && err != nil {
+				continue
+			}
+			if binlog == 0 {
+				continue
+			}
 
+			//设置 machine状态为pump
+			err = SetMachineStateByIp(cluster, user, ip, "idle")
+			if err != nil {
+				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
+				continue
+			}
+			//设置 task的状态
+			err = SetTaskState(cluster, user, uuid, "todo", "dump", "")
+			if err != nil {
+				fmt.Printf("call SetTaskState failed. err : %s", err.Error())
+				continue
+			}
+			return
 		case Dumping:
+			err, gc := GetClusterGC(cluster, user, uuid, cfg)
+			if err != nil {
+				fmt.Printf("call GetClusterGC failed. err : %s", err.Error())
+				continue
+			}
+			gctime = gc
+			//修改GC时间
+			err = SetClusterGC(cluster, user, uuid, cfg, "168h")
+			if err != nil {
+				fmt.Printf("call SetClusterGC failed. err : %s", err.Error())
+				continue
+			}
+			//全量导出
+			err, args := PrepareDumpArgus(cluster, user, cfg, uuid, 1)
+			if err != nil {
+				fmt.Printf("call PrepareDumpArgus failed. err : %s", err.Error())
+				continue
+			}
 
+			output, err := execute.ExecuteCommand(cfg.Task.Path, "mydumper", args...)
+			if err != nil || len(output) > 0{
+				e := SetMachineStateByIp(cluster, user, ip, "failed")
+				if e != nil {
+					fmt.Printf("call SetMachineStateByIp failed. err : %s", e.Error())
+					continue
+				}
+			}
+
+			err, args = PrepareLoadArgus(cluster, user, cfg, uuid)
+			if err != nil {
+				fmt.Printf("call PrepareLoadArgus failed. err : %s", err.Error())
+				continue
+			}
+			output, err = execute.ExecuteCommand(cfg.Task.Path, "loader", args...)
+			if err != nil {
+				e := SetMachineStateByIp(cluster, user, ip, "failed")
+				if e != nil {
+					fmt.Printf("call SetMachineStateByIp failed. err : %s", e.Error())
+					continue
+				}
+			}
+
+			return
 		case Drainer:
 
 		case AddDrainer:

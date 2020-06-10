@@ -46,6 +46,8 @@ const (
 	getmachinenum = "select ip from bk_machine_info where task_id = ? and stage = ?"
 
 	getsrcclustername = "select src from bk_task_info where uuid = ?"
+
+	isbinlogopen = "show variables like 'log_bin'"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -554,4 +556,32 @@ func GetSrcClusterName(db *sql.DB, uuid int) (error, string) {
 	rows.Close()
 	tx.Commit()
 	return nil, src
+}
+/*
+ * 获取是否打开binlog
+ */
+func IsBinlogOpen(db *sql.DB) (error, int) {
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call IsBinlogOpen: tx Begin failed: " + err.Error()), 0
+	}
+	rows, err := tx.Query(isbinlogopen)
+	if err != nil {
+		return errors.New("call IsBinlogOpen: tx Query failed: " + err.Error()), 0
+	}
+	key := ""
+	value := 0
+	for rows.Next() {
+		err := rows.Scan(&key, &value)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return errors.New("call IsBinlogOpen: tx scan failed: " + err.Error()), value
+		}
+		rows.Close()
+		break
+	}
+	rows.Close()
+	tx.Commit()
+	return nil, value
 }

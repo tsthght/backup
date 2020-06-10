@@ -178,3 +178,25 @@ func GetMachinePumpIpByUUID(cluster *database.MGRInfo, user database.UserInfo, u
 	db.Close()
 	return err, pumplist
 }
+
+func IsBinlogOpen(cluster *database.MGRInfo, user database.UserInfo, uuid int, cfg config.BkConfig) (error, int) {
+	db := database.GetMGRConnection(cluster, user, false)
+	if db == nil {
+		return errors.New("mysql is nil"), 0
+	}
+
+	bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
+	if err != nil {
+		db.Close()
+		return err, 0
+	}
+	db.Close()
+	fmt.Printf("bi: %v\n", bi)
+	db = database.GetTiDBConnection(bi)
+	if db == nil {
+		return errors.New("tidb is nil"), 0
+	}
+	err, binlog := database.IsBinlogOpen(db)
+	db.Close()
+	return err, binlog
+}
