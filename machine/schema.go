@@ -1,7 +1,9 @@
 package machine
 
 import (
+	"bytes"
 	"fmt"
+	"os/exec"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
@@ -11,6 +13,7 @@ import (
 func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, initState int, ip string, uuid int, tp int) {
 	message := ""
 	gctime := ""
+	pos := ""
 	for {
 		fmt.Printf("schema loop...\n")
 		switch initState {
@@ -72,6 +75,12 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				initState = Failed
 				continue
 			}
+
+			//获取pos
+			grepcmd := exec.Command("grep", "Pos", cfg.Task.Path + BKPATH + "metadata")
+			stdout := &bytes.Buffer{}
+			grepcmd.Stdout = stdout
+			fmt.Printf("########## %s\n", grepcmd)
 
 			e := SetMachineStateByIp(cluster, user, ip, "loading")
 			if e != nil {
