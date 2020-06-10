@@ -17,7 +17,7 @@ default-pump = 2
 max-execute-time = 10000
 not-delete-dump-file = 0
 default-dump-chunksize = 100
-default-loader-thread = 128s
+default-loader-thread = 128
 [blade]
 bladeappkey = "test.test"
 bladeuser = "admin"
