@@ -124,6 +124,7 @@ func GetTiDBConnection(cluster *BladeInfo) *sql.DB {
 		ref := strings.Join([]string{cluster.User, ":", cluster.Password, "@tcp(",host, ":", cluster.Port, ")/", cluster.Database, "?charset=utf8"}, "")
 		db, _ := sql.Open("mysql", ref)
 		if err := db.Ping(); err != nil {
+			fmt.Printf("#### err : %s\n", err.Error())
 			index ++
 			continue
 		} else {
