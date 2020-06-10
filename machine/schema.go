@@ -80,9 +80,11 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			//获取pos
 			grepcmd := exec.Command("grep", "Pos", cfg.Task.Path + BKPATH + "metadata")
 			stdout := &bytes.Buffer{}
+			stderr := &bytes.Buffer{}
 			grepcmd.Stdout = stdout
+			grepcmd.Stderr = stderr
 			grepcmd.Run()
-			fmt.Printf("########## %s\n", stdout.String())
+			fmt.Printf("########## %s: %s\n", stdout.String(), stderr.String())
 			poss := strings.Split(stdout.String(), ":")
 			if len(poss) == 2 {
 				pos = poss[1]
