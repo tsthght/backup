@@ -1,0 +1,7 @@
+[cmdb]
+appkey = "com.xxx.xxx.xxx.resource"
+username = "abc"
+password = "123"
+cmdb_port = 5002
+cmdb_host = "1.1.1.1,2.2.2.2,3.3.3.3"
+cmdb_db = "backupnetes"

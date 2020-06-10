@@ -35,3 +35,7 @@ type BkConfig struct {
 	Task TASK
 	Blade BladeConfig
 }
+
+type ClientConfig struct {
+	Cmdb CMDB
+}
