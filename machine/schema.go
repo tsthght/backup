@@ -84,6 +84,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			fmt.Printf("########## %s\n", stdout.String())
 			poss := strings.Split(stdout.String(), ":")
 			pos = poss[1]
+			fmt.Printf("######### %s\n", pos)
 			e := SetMachineStateByIp(cluster, user, ip, "loading")
 			if e != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", e.Error())
