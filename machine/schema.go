@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
@@ -80,8 +81,9 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			grepcmd := exec.Command("grep", "Pos", cfg.Task.Path + BKPATH + "metadata")
 			stdout := &bytes.Buffer{}
 			grepcmd.Stdout = stdout
-			fmt.Printf("########## %s\n", grepcmd)
-
+			fmt.Printf("########## %s\n", stdout.String())
+			poss := strings.Split(stdout.String(), ":")
+			pos = poss[1]
 			e := SetMachineStateByIp(cluster, user, ip, "loading")
 			if e != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", e.Error())
