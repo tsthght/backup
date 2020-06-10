@@ -15,6 +15,8 @@ path = "/opt/"
 default-gc = "168h"
 default-pump = 2
 max-execute-time = 10000
+not-delete-dump-file = 0
+default-dump-chunksize = 100
 [blade]
 bladeappkey = "test.test"
 bladeuser = "admin"

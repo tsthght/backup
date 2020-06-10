@@ -27,6 +27,8 @@ type TASK struct {
 	DefaultGCTime string         `toml:"default-gc" json:"default-gc"`
 	DefaultPump int              `toml:"default-pump" json:"default-pump"`
 	DefaultMaxExecuteTime int    `toml:"max-execute-time" json:"max-execute-time"`
+	NotDeleteDumpFile int        `toml:"not-delete-dump-file" json:"not-delete-dump-file"`
+	DefaultDumpChunkSize int     `toml:"default-dump-chunksize" json:"default-dump-chunksize"`
 }
 
 type BkConfig struct {

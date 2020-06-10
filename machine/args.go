@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"strings"
 	"time"
 
@@ -71,6 +72,10 @@ func PrepareDumpArgus(cluster *database.MGRInfo, user database.UserInfo, cfg con
 			args = append(args, dbtb[1])
 		}
 	}
+
+	//chunk
+	args = append(args, "-F")
+	args = append(args, strconv.Itoa(cfg.Task.DefaultDumpChunkSize))
 
 	//path
 	args = append(args, "-o")
