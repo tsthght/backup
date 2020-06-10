@@ -12,5 +12,6 @@ func InitClientArgs(args *ClientArgs) {
 	args.Src = flag.String("src", "", "src cluster name")
 	args.Dst = flag.String("dst", "", "dst cluster name")
 	args.Type = flag.String("type", "full", "support: schema, full")
+	args.Db = flag.String("db", "", "db:tb,tb2")
 	flag.Parse()
 }

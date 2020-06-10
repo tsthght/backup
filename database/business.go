@@ -53,7 +53,7 @@ const (
 
 	setmaxexecutetime = "set global max_execution_time = ?"
 
-	setatask = "insert into bk_task_info (src, dst, task_type) values (?, ?, ?)"
+	setatask = "insert into bk_task_info (src, dst, task_type, dbinfo) values (?, ?, ?, ?)"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -645,7 +645,7 @@ func SetMaxExecuteTime(db *sql.DB, exetime int) error {
 /*
  * 设置任务
  */
-func SetATask(db *sql.DB, src, dst, tp string) error {
+func SetATask(db *sql.DB, src, dst, tp, dt string) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return errors.New("call SetATask: tx Begin failed: " + err.Error())
@@ -655,7 +655,7 @@ func SetATask(db *sql.DB, src, dst, tp string) error {
 		tx.Rollback()
 		return errors.New("call SetATask: tx Prepare failed")
 	}
-	_, err = stmt.Exec(src, dst, tp)
+	_, err = stmt.Exec(src, dst, tp, dt)
 	if err != nil {
 		tx.Rollback()
 		return errors.New("call SetATask: tx Exec failed")

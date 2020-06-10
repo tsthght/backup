@@ -9,4 +9,5 @@ type ClientArgs struct {
 	Src *string
 	Dst *string
 	Type *string
+	Db *string
 }

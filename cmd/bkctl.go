@@ -32,12 +32,15 @@ func main() {
 		Port:     strconv.Itoa(conf.Cmdb.Port),
 		Database: conf.Cmdb.Database,
 	}
-	fmt.Printf("%v\n", userinfo)
 	mgrinfo := database.MGRInfo{
 		Hosts:      strings.Split(conf.Cmdb.Host, ","),
 		WriteIndex: 0,
 	}
-	fmt.Printf("%v\n", mgrinfo)
+
+	if len(*arg.Src) == 0 || len(*arg.Dst) == 0 {
+		fmt.Printf("src and dst should not be nil\n")
+		return
+	}
 
 	db := database.GetMGRConnection(&mgrinfo, userinfo, true)
 	if db == nil {
@@ -45,7 +48,7 @@ func main() {
 		return
 	}
 
-	err := database.SetATask(db, *arg.Src, *arg.Dst, *arg.Type)
+	err := database.SetATask(db, *arg.Src, *arg.Dst, *arg.Type, *arg.Db)
 	if err != nil {
 		fmt.Printf("call SetATask failed, err : %s\n", errors.New("db is nil"))
 		return
