@@ -201,3 +201,49 @@ func IsBinlogOpen(cluster *database.MGRInfo, user database.UserInfo, uuid int, c
 	db.Close()
 	return err, binlog
 }
+
+func GetMaxExecuteTime(cluster *database.MGRInfo, user database.UserInfo, uuid int, cfg config.BkConfig) (error, int) {
+	db := database.GetMGRConnection(cluster, user, false)
+	if db == nil {
+		return errors.New("mysql is nil"), 0
+	}
+
+	bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
+	if err != nil {
+		db.Close()
+		return err, 0
+	}
+	db.Close()
+	bi.Database = "mysql"
+	fmt.Printf("bi: %v\n", bi)
+	db = database.GetTiDBConnection(bi)
+	if db == nil {
+		return errors.New("tidb is nil"), 0
+	}
+	err, exetime := database.GetMaxExecuteTime(db)
+	db.Close()
+	return err, exetime
+}
+
+func SetMaxExecuteTime(cluster *database.MGRInfo, user database.UserInfo, uuid int, cfg config.BkConfig, exetime int) error {
+	db := database.GetMGRConnection(cluster, user, false)
+	if db == nil {
+		return errors.New("mysql is nil")
+	}
+
+	bi, err := database.GetCluserBasicInfo(db, uuid, cfg, database.UpStream)
+	if err != nil {
+		db.Close()
+		return err
+	}
+	db.Close()
+	bi.Database = "mysql"
+	fmt.Printf("bi: %v\n", bi)
+	db = database.GetTiDBConnection(bi)
+	if db == nil {
+		return errors.New("tidb is nil")
+	}
+	err = database.SetMaxExecuteTime(db, exetime)
+	db.Close()
+	return err
+}

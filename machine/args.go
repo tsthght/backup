@@ -128,6 +128,10 @@ func PrepareLoadArgus(cluster *database.MGRInfo, user database.UserInfo, cfg con
 	args = append(args, "-P")
 	args = append(args, bi.Port)
 
+	//thread
+	args = append(args, "-t")
+	args = append(args, "128")
+
 	//path
 	args = append(args, "-d")
 	args = append(args, BKPATH)

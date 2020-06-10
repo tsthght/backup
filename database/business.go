@@ -48,6 +48,10 @@ const (
 	getsrcclustername = "select src from bk_task_info where uuid = ?"
 
 	isbinlogopen = "show variables like 'log_bin'"
+
+	getmaxexecutetime = "show variables like 'max_execution_time'"
+
+	setmaxexecutetime = "set global max_execution_time = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -584,4 +588,54 @@ func IsBinlogOpen(db *sql.DB) (error, int) {
 	rows.Close()
 	tx.Commit()
 	return nil, value
+}
+
+/*
+ * 获取max execute time
+ */
+func GetMaxExecuteTime(db *sql.DB) (error, int){
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call GetMaxExecuteTime: tx Begin failed: " + err.Error()), 0
+	}
+	rows, err := tx.Query(getmaxexecutetime)
+	if err != nil {
+		return errors.New("call GetMaxExecuteTime: tx Query failed: " + err.Error()), 0
+	}
+	key := ""
+	value := 0
+	for rows.Next() {
+		err := rows.Scan(&key, &value)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return errors.New("call GetMaxExecuteTime: tx scan failed: " + err.Error()), value
+		}
+		rows.Close()
+		break
+	}
+	rows.Close()
+	tx.Commit()
+	return nil, value
+}
+/*
+ * 设置max execute time
+ */
+func SetMaxExecuteTime(db *sql.DB, exetime int) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("call SetMaxExecuteTime: tx Begin failed: " + err.Error())
+	}
+	stmt, err := tx.Prepare(setmaxexecutetime)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("call SetMaxExecuteTime: tx Prepare failed")
+	}
+	_, err = stmt.Exec(exetime)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("call SetMaxExecuteTime: tx Exec failed")
+	}
+	tx.Commit()
+	return nil
 }

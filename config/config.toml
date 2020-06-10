@@ -14,6 +14,7 @@ cmdb_db = "backupnetes"
 path = "/opt/"
 default-gc = "168h"
 default-pump = 2
+max-execute-time = 10000
 [blade]
 bladeappkey = "test.test"
 bladeuser = "admin"
