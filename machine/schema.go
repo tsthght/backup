@@ -81,9 +81,12 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			grepcmd := exec.Command("grep", "Pos", cfg.Task.Path + BKPATH + "metadata")
 			stdout := &bytes.Buffer{}
 			grepcmd.Stdout = stdout
+			grepcmd.Run()
 			fmt.Printf("########## %s\n", stdout.String())
 			poss := strings.Split(stdout.String(), ":")
-			pos = poss[1]
+			if len(poss) == 2 {
+				pos = poss[1]
+			}
 			fmt.Printf("######### %s\n", pos)
 			e := SetMachineStateByIp(cluster, user, ip, "loading")
 			if e != nil {
