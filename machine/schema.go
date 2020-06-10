@@ -78,7 +78,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			}
 
 			//获取pos
-			grepcmd := exec.Command("grep", "Pos", cfg.Task.Path + BKPATH + "metadata")
+			grepcmd := exec.Command("grep", "Pos", cfg.Task.Path + "/" + BKPATH + "/" + "metadata")
 			stdout := &bytes.Buffer{}
 			stderr := &bytes.Buffer{}
 			grepcmd.Stdout = stdout
