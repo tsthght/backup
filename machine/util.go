@@ -72,12 +72,12 @@ func SetMachineStateByIp(cluster *database.MGRInfo, user database.UserInfo, ip, 
 	return nil
 }
 
-func SetTaskState(cluster *database.MGRInfo, user database.UserInfo, uuid int, state, stage, message string) error {
+func SetTaskState(cluster *database.MGRInfo, user database.UserInfo, uuid int, state, stage, message, pos string) error {
 	db := database.GetMGRConnection(cluster, user, true)
 	if db == nil {
 		return errors.New("db is nil")
 	}
-	err := database.SetTaskStateAndMessageByUUID(db, uuid, state, stage, message)
+	err := database.SetTaskStateAndMessageByUUID(db, uuid, state, stage, message, pos)
 	if err != nil {
 		db.Close()
 		return err

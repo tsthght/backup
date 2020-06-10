@@ -37,7 +37,7 @@ const (
 
 	getdbinfobyuuid = "select dbinfo from bk_task_info where uuid = ?"
 
-	settaskstateandmessagebyuuid = "update bk_task_info set state = ?, stage = ?, error_message = ? where uuid = ?"
+	settaskstateandmessagebyuuid = "update bk_task_info set state = ?, stage = ?, error_message = ?, pos = ? where uuid = ?"
 
 	setgclifetime = "update mysql.tidb set VARIABLE_VALUE= ? where VARIABLE_NAME='tikv_gc_life_time'"
 
@@ -414,7 +414,7 @@ func GetDBInfoByUUID(db *sql.DB, uuid int) (string, error) {
 /*
  * 作用：修改任务的状态
  */
-func SetTaskStateAndMessageByUUID(db *sql.DB, uuid int, state, stage, message string) error {
+func SetTaskStateAndMessageByUUID(db *sql.DB, uuid int, state, stage, message, pos string) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return errors.New("call SetTaskStateByUUID: tx Begin failed: " + err.Error())
@@ -424,7 +424,7 @@ func SetTaskStateAndMessageByUUID(db *sql.DB, uuid int, state, stage, message st
 		tx.Rollback()
 		return errors.New("call SetTaskStateAndMessageByUUID: tx Prepare failed")
 	}
-	_, err = stmt.Exec(state, stage, message, uuid)
+	_, err = stmt.Exec(state, stage, message, pos, uuid)
 	if err != nil {
 		tx.Rollback()
 		return errors.New("call SetTaskStateAndMessageByUUID: tx Exec failed")
