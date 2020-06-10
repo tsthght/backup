@@ -122,7 +122,7 @@ func GetClusterGC(cluster *database.MGRInfo, user database.UserInfo, uuid int, c
 		return err, ""
 	}
 	db.Close()
-	bi.Database = "backupnetes"
+	bi.Database = "mysql"
 	fmt.Printf("bi: %v\n", bi)
 	db = database.GetTiDBConnection(bi)
 	if db == nil {
