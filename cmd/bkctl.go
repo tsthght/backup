@@ -17,13 +17,11 @@ func main() {
 	//参数解析
 	arg := args.ClientArgs{}
 	args.InitClientArgs(&arg)
-	fmt.Printf("args : %v\n", arg)
 	//配置文件解析
 	var conf config.ClientConfig
 	if _, err := toml.DecodeFile(*arg.CfgFile, &conf); err != nil {
 		fmt.Printf("error\n")
 	}
-	fmt.Printf("%v\n", conf)
 
 	//参数转化
 	userinfo := database.UserInfo{
@@ -53,5 +51,5 @@ func main() {
 		fmt.Printf("call SetATask failed, err : %s\n", errors.New("db is nil"))
 		return
 	}
-	fmt.Printf("")
+	fmt.Printf("crate task success\n")
 }
