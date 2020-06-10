@@ -19,7 +19,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 		switch initState {
 		case Pump:
 			//修改任务状态为 (doing, pump)
-			err := SetTaskState(cluster, user, uuid, "doing", "pump", "")
+			err := SetTaskState(cluster, user, uuid, "doing", "pump", "", "")
 			if err != nil {
 				fmt.Printf("call SetTaskState faled. err : %s", err.Error())
 				continue
@@ -34,7 +34,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 			fmt.Printf("current num: %d, default num: %d\n", num, cfg.Task.DefaultPump)
 			if num >= cfg.Task.DefaultPump {
 				//更新状态为 修改配置文件
-				err := SetTaskState(cluster, user, uuid, "todo", "add_pump", "")
+				err := SetTaskState(cluster, user, uuid, "todo", "add_pump", "", "")
 				if err != nil {
 					fmt.Printf("call SetTaskState failed. err : %s", err.Error())
 					continue
@@ -55,7 +55,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 				continue
 			}
 			//设置 task的状态
-			err = SetTaskState(cluster, user, uuid, "todo", "pump", "")
+			err = SetTaskState(cluster, user, uuid, "todo", "pump", "", "")
 			if err != nil {
 				fmt.Printf("call SetTaskState failed. err : %s", err.Error())
 				continue
@@ -84,7 +84,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 			return
 		case AddPump:
 			//修改任务状态为 (doing, pump)
-			err := SetTaskState(cluster, user, uuid, "doing", "add_pump", "")
+			err := SetTaskState(cluster, user, uuid, "doing", "add_pump", "", "")
 			if err != nil {
 				fmt.Printf("call SetTaskState faled. err : %s", err.Error())
 				continue
@@ -118,7 +118,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 				continue
 			}
 			//设置 task的状态
-			err = SetTaskState(cluster, user, uuid, "todo", "open_binlog", "")
+			err = SetTaskState(cluster, user, uuid, "todo", "open_binlog", "", "")
 			if err != nil {
 				fmt.Printf("call SetTaskState failed. err : %s", err.Error())
 				continue
@@ -126,7 +126,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 			return
 		case OpenBinlog:
 			//修改任务状态为 (doing, pump)
-			err := SetTaskState(cluster, user, uuid, "doing", "open_binlog", "")
+			err := SetTaskState(cluster, user, uuid, "doing", "open_binlog", "", "")
 			if err != nil {
 				fmt.Printf("call SetTaskState faled. err : %s", err.Error())
 				continue
@@ -167,7 +167,7 @@ func StateMachineAll(cluster *database.MGRInfo, user database.UserInfo, cfg conf
 				continue
 			}
 			//设置 task的状态
-			err = SetTaskState(cluster, user, uuid, "todo", "dump", "")
+			err = SetTaskState(cluster, user, uuid, "todo", "dump", "", "")
 			if err != nil {
 				fmt.Printf("call SetTaskState failed. err : %s", err.Error())
 				continue
