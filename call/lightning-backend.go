@@ -60,6 +60,8 @@ func CallLightning(cluster *database.MGRInfo, user database.UserInfo, cfg config
 	if err != nil {
 		return err
 	}
+	fmt.Printf("lightning args: %v\n", args)
+	//call lightning
 	output, err := execute.ExecuteCommand(cfg.Task.Path, "tidb-lightning", args...)
 	if err != nil {
 		fmt.Printf("call tidb-lightning failed. err : %s\n", output)
