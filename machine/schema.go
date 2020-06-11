@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/tsthght/backup/call"
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
 	"github.com/tsthght/backup/execute"
@@ -112,6 +113,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			//更新状态
 			initState = Loading
 		case Loading:
+			/*
 			err, args := PrepareLoadArgus(cluster, user, cfg, uuid)
 			if err != nil {
 				fmt.Printf("call PrepareLoadArgus failed. err : %s", err.Error())
@@ -134,6 +136,18 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				initState = Failed
 				continue
 			}
+			*/
+			err := call.CallLightning(cluster, user, cfg, uuid)
+			if err != nil {
+				message = err.Error()
+				e := SetMachineStateByIp(cluster, user, ip, "failed")
+				if e != nil {
+					fmt.Printf("call SetMachineStateByIp failed. err : %s", e.Error())
+					continue
+				}
+				initState = Failed
+				continue
+			}
 
 			err = SetMachineStateByIp(cluster, user, ip, "pos_check")
 			if err != nil {
@@ -141,6 +155,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			}
 			//更新状态
 			initState = PosCheck
+			continue
 		case PosCheck:
 			err := SetMachineStateByIp(cluster, user, ip, "done")
 			if err != nil {
@@ -192,6 +207,8 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			if cfg.Task.NotDeleteDumpFile != 1 {
 				os.RemoveAll(cfg.Task.Path + "/" + BKPATH)
 			}
+
+			call.CleanLightning(cfg)
 
 			err = SetMachineStateByIp(cluster, user, ip, "idle")
 			if err != nil {
