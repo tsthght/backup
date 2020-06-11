@@ -46,16 +46,45 @@ func main() {
 		return
 	}
 
-	err := database.SetATask(db, *arg.Src, *arg.Dst, *arg.Type, *arg.Db)
-	if err != nil {
-		fmt.Printf("call SetATask failed, err : %s\n", errors.New("db is nil"))
+	switch *arg.Operator {
+	case "create": {
+
+		err := database.SetATask(db, *arg.Src, *arg.Dst, *arg.Type, *arg.Db)
+		if err != nil {
+			fmt.Printf("call SetATask failed, err : %s\n", errors.New("db is nil"))
+			return
+		}
+
+		uuid, err := database.GetLatestTask(db, *arg.Src, *arg.Dst, *arg.Type, *arg.Db)
+		if err != nil {
+			fmt.Printf("get task uuid failed. err : %s\n", err.Error())
+			return
+		}
+		fmt.Printf("crate task success, uuid = %d\n", uuid)
 		return
+	}
+	case "show": {
+		if strings.EqualFold(*arg.Role, "task") {
+			str, err := database.GetTastInfo(db, *arg.UUID)
+			if err != nil {
+				fmt.Printf("get task info failed. err : %s\n", err.Error())
+				return
+			}
+			fmt.Printf("Task info:\n\t%s\n", str)
+			return
+		} else {
+			str, err := database.GetMachineInfo(db, *arg.UUID)
+			if err != nil {
+				fmt.Printf("get machin info failed. err : %s\n", err.Error())
+				return
+			}
+			fmt.Printf("Machine info:\n\t")
+			for _, v := range str {
+				fmt.Printf("\t" + "%s", v)
+			}
+		}
+	}
 	}
 
-	uuid, err := database.GetLatestTask(db, *arg.Src, *arg.Dst, *arg.Type, *arg.Db)
-	if err != nil {
-		fmt.Printf("get task uuid failed. err : %s\n", err.Error())
-		return
-	}
-	fmt.Printf("crate task success, uuid = %d\n", uuid)
+
 }

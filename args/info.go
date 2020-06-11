@@ -10,4 +10,7 @@ type ClientArgs struct {
 	Dst *string
 	Type *string
 	Db *string
+	Operator *string
+	Role *string
+	UUID *int
 }

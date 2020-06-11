@@ -56,6 +56,10 @@ const (
 	setatask = "insert into bk_task_info (src, dst, task_type, dbinfo) values (?, ?, ?, ?)"
 
 	getlatesttask = "select uuid from bk_task_info where src = ? and dst = ? and task_type = ? and dbinfo = ? order by uuid desc limit 1"
+
+	gettaskinfo = "select src, dst, dbinfo, task_type, state, stage, error_message, pos from bk_task_info where uuid = ?"
+
+	getmachineinfo = "select cpu_percent, mem_used_percent, disk_used_percent, stage from bk_machine_info where task_id = ?"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -691,4 +695,62 @@ func GetLatestTask(db *sql.DB, src, dst, tp, dt string) (int, error) {
 	rows.Close()
 	tx.Commit()
 	return value, nil
+}
+/*
+ * 根据UUID获得任务信息
+ */
+func GetTastInfo(db *sql.DB, uuid int) (string, error) {
+	tx, err := db.Begin()
+	if err != nil {
+		return "", errors.New("call GetTastInfo: tx Begin failed: " + err.Error())
+	}
+	rows, err := tx.Query(gettaskinfo, uuid)
+	if err != nil {
+		return "", errors.New("call GetTastInfo: tx Query failed: " + err.Error())
+	}
+	var src, dst, dbinfo, tp, state, stage, errmsg, pos string
+	for rows.Next() {
+		err := rows.Scan(&src, &dst, &dbinfo, &tp, &state, &stage, &errmsg, &pos)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return "", errors.New("call GetTastInfo: tx scan failed: " + err.Error())
+		}
+		rows.Close()
+		break
+	}
+	rows.Close()
+	tx.Commit()
+
+	return fmt.Sprintf("%s >>>>%s(%s)>>>> %s, <%s, %s>, <%s>, %s",
+		src, tp, dbinfo, dst, state, stage, pos, errmsg), nil
+}
+
+func GetMachineInfo(db *sql.DB, uuid int) ([]string, error) {
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, errors.New("call GetMachineInfo: tx Begin failed: " + err.Error())
+	}
+	rows, err := tx.Query(getmachineinfo, uuid)
+	if err != nil {
+		return nil, errors.New("call GetMachineInfo: tx Query failed: " + err.Error())
+	}
+	var cpu, mem, disk int
+	var stage string
+	var ret []string
+	for rows.Next() {
+		err := rows.Scan(&cpu, &mem, &disk, &stage)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return nil, errors.New("call GetMachineInfo: tx scan failed: " + err.Error())
+		}
+		rows.Close()
+		ret = append(ret, fmt.Sprintf("cpu:%d, mem:%d, disk:%d, stage:%s\n", cpu, mem, disk, stage))
+		break
+	}
+	rows.Close()
+	tx.Commit()
+
+	return ret, nil
 }
