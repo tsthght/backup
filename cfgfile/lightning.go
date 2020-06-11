@@ -23,7 +23,7 @@ enable = false
 
 [tikv-importer]
 backend = "tidb"
-on-duplicate = "error"
+on-duplicate = "replace"
 
 [mydumper]
 data-source-dir = "{{ .BKPath }}"
