@@ -15,7 +15,7 @@ path = "/opt/"
 default-gc = "168h"
 default-pump = 2
 max-execute-time = 10000
-not-delete-dump-file = 0
+not-reset-env = 0
 default-dump-chunksize = 100
 default-loader-thread = 128
 [blade]
