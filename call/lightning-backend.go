@@ -47,7 +47,7 @@ func CallLightning(cluster *database.MGRInfo, user database.UserInfo, cfg config
 	}
 	idx := rand.Intn(len(bi.Hosts) - 1)
 	//gen file
-	err = cfgfile.GenLightningConfigFile(cfg.Task.Path, cfg.Task.Path + "/" + cfgfile.DataDir,  user.Username, user.Password, bi.Hosts[idx], cfg.Task.DefaultLoaderThread, p)
+	err = cfgfile.GenLightningConfigFile(cfg.Task.Path, cfg.Task.Path + "/" + cfgfile.DataDir,  bi.User, bi.Password, bi.Hosts[idx], cfg.Task.DefaultLoaderThread, p)
 	if err != nil {
 		return err
 	}
