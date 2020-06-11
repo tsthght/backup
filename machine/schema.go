@@ -113,30 +113,6 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 			//更新状态
 			initState = Loading
 		case Loading:
-			/*
-			err, args := PrepareLoadArgus(cluster, user, cfg, uuid)
-			if err != nil {
-				fmt.Printf("call PrepareLoadArgus failed. err : %s", err.Error())
-				continue
-			}
-			output, err := execute.ExecuteCommand(cfg.Task.Path, "loader", args...)
-			if err != nil {
-				e := SetMachineStateByIp(cluster, user, ip, "failed")
-				if e != nil {
-					fmt.Printf("call SetMachineStateByIp failed. err : %s", e.Error())
-					continue
-				}
-				message = ""
-				if err != nil {
-					message += err.Error()
-				}
-				if len(output) > 0 {
-					message += output
-				}
-				initState = Failed
-				continue
-			}
-			*/
 			err := call.CallLightning(cluster, user, cfg, uuid)
 			if err != nil {
 				message = err.Error()
