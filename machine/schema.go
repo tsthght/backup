@@ -208,7 +208,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				os.RemoveAll(cfg.Task.Path + "/" + BKPATH)
 			}
 
-			//call.CleanLightning(cfg)
+			call.CleanLightning(cfg)
 
 			err = SetMachineStateByIp(cluster, user, ip, "idle")
 			if err != nil {
