@@ -11,6 +11,7 @@ import (
 	"github.com/tsthght/backup/config"
 	"github.com/tsthght/backup/database"
 	"github.com/tsthght/backup/execute"
+	"github.com/tsthght/backup/machine"
 )
 
 func getLightningBackendArgs(cfg config.BkConfig, host string) ([]string, error) {
@@ -47,7 +48,7 @@ func CallLightning(cluster *database.MGRInfo, user database.UserInfo, cfg config
 	}
 	idx := rand.Intn(len(bi.Hosts) - 1)
 	//gen file
-	err = cfgfile.GenLightningConfigFile(cfg.Task.Path, cfg.Task.Path,  user.Username, user.Password, bi.Hosts[idx], cfg.Task.DefaultLoaderThread, p)
+	err = cfgfile.GenLightningConfigFile(cfg.Task.Path, cfg.Task.Path + "/" + machine.BKPATH,  user.Username, user.Password, bi.Hosts[idx], cfg.Task.DefaultLoaderThread, p)
 	if err != nil {
 		return err
 	}
