@@ -26,11 +26,6 @@ func getLightningBackendArgs(cfg config.BkConfig, host string) ([]string, error)
 }
 
 func CallLightning(cluster *database.MGRInfo, user database.UserInfo, cfg config.BkConfig, uuid int) error {
-	//port
-	p, err := strconv.Atoi(user.Port)
-	if err != nil {
-		return err
-	}
 	//host
 	db := database.GetMGRConnection(cluster, user, true)
 	if db == nil {
@@ -46,6 +41,11 @@ func CallLightning(cluster *database.MGRInfo, user database.UserInfo, cfg config
 		return errors.New("sql is nil")
 	}
 	idx := rand.Intn(len(bi.Hosts) - 1)
+	//port
+	p, err := strconv.Atoi(bi.Port)
+	if err != nil {
+		return err
+	}
 	//gen file
 	err = cfgfile.GenLightningConfigFile(cfg.Task.Path, cfg.Task.Path + "/" + cfgfile.DataDir,  bi.User, bi.Password, bi.Hosts[idx], cfg.Task.DefaultLoaderThread, p)
 	if err != nil {
