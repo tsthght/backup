@@ -722,7 +722,7 @@ func GetTastInfo(db *sql.DB, uuid int) (string, error) {
 	rows.Close()
 	tx.Commit()
 
-	return fmt.Sprintf("%s >>>>%s(%s)>>>> %s, <%s, %s>, <%s>, %s",
+	return fmt.Sprintf("src:%s >>>>%s(%s)>>>> dst:%s, <%s, %s>, <%s>, %s",
 		src, tp, dbinfo, dst, state, stage, pos, errmsg), nil
 }
 
@@ -735,8 +735,8 @@ func GetMachineInfo(db *sql.DB, uuid int) ([]string, error) {
 	if err != nil {
 		return nil, errors.New("call GetMachineInfo: tx Query failed: " + err.Error())
 	}
-	var cpu, mem, disk int
-	var stage string
+	var mem, disk int
+	var cpu, stage string
 	var ret []string
 	for rows.Next() {
 		err := rows.Scan(&cpu, &mem, &disk, &stage)
@@ -746,7 +746,7 @@ func GetMachineInfo(db *sql.DB, uuid int) ([]string, error) {
 			return nil, errors.New("call GetMachineInfo: tx scan failed: " + err.Error())
 		}
 		rows.Close()
-		ret = append(ret, fmt.Sprintf("cpu:%d, mem:%d, disk:%d, stage:%s\n", cpu, mem, disk, stage))
+		ret = append(ret, fmt.Sprintf("cpu:%ss, mem:%d, disk:%d, stage:%s\n", cpu, mem, disk, stage))
 		break
 	}
 	rows.Close()
