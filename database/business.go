@@ -746,7 +746,7 @@ func GetMachineInfo(db *sql.DB, uuid int) ([]string, error) {
 			return nil, errors.New("call GetMachineInfo: tx scan failed: " + err.Error())
 		}
 		rows.Close()
-		ret = append(ret, fmt.Sprintf("cpu:%ss, mem:%d, disk:%d, stage:%s\n", cpu, mem, disk, stage))
+		ret = append(ret, fmt.Sprintf("cpu:%s, mem:%d, disk:%d, stage:%s\n", cpu, mem, disk, stage))
 		break
 	}
 	rows.Close()
