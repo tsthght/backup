@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	LightningConfigFile = "lightning"
+	LightningConfigFile = "lightning.toml"
 	LightningLogFile = "tidb-lightning.log"
 )
 
@@ -25,7 +25,7 @@ enable = false
 backend = "tidb"
 
 [mydumper]
-data-source-dir = {{ .BKPath }}
+data-source-dir = "{{ .BKPath }}"
 
 [tidb]
 host = "{{ .Host }}"
