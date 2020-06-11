@@ -51,5 +51,11 @@ func main() {
 		fmt.Printf("call SetATask failed, err : %s\n", errors.New("db is nil"))
 		return
 	}
-	fmt.Printf("crate task success\n")
+
+	uuid, err := database.GetLatestTask(db, *arg.Src, *arg.Dst, *arg.Type, *arg.Db)
+	if err != nil {
+		fmt.Printf("get task uuid failed. err : %s\n", err.Error())
+		return
+	}
+	fmt.Printf("crate task success, uuid = %d\n", uuid)
 }

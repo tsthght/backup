@@ -54,6 +54,8 @@ const (
 	setmaxexecutetime = "set global max_execution_time = ?"
 
 	setatask = "insert into bk_task_info (src, dst, task_type, dbinfo) values (?, ?, ?, ?)"
+
+	getlatesttask = "select uuid from bk_task_info where src = ? and dst = ? and task_type = ? and dbinfo = ? order by uuid desc limit 1"
 )
 
 func RegisterToCmdb(db *sql.DB, ip string) (int64, error) {
@@ -662,4 +664,32 @@ func SetATask(db *sql.DB, src, dst, tp, dt string) error {
 	}
 	tx.Commit()
 	return nil
+}
+/*
+ * 获取最新的任务
+ */
+func GetLatestTask(db *sql.DB, src, dst, tp, dt string) (int, error) {
+	tx, err := db.Begin()
+	if err != nil {
+		return 0, errors.New("call GetMaxExecuteTime: tx Begin failed: " + err.Error())
+	}
+	rows, err := tx.Query(getlatesttask, src, dst, tp, dt)
+	if err != nil {
+		return 0, errors.New("call GetMaxExecuteTime: tx Query failed: " + err.Error())
+	}
+	key := ""
+	value := -1
+	for rows.Next() {
+		err := rows.Scan(&key, &value)
+		if err != nil {
+			rows.Close()
+			tx.Rollback()
+			return 0, errors.New("call GetMaxExecuteTime: tx scan failed: " + err.Error())
+		}
+		rows.Close()
+		break
+	}
+	rows.Close()
+	tx.Commit()
+	return value, nil
 }
