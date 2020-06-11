@@ -35,11 +35,6 @@ func main() {
 		WriteIndex: 0,
 	}
 
-	if len(*arg.Src) == 0 || len(*arg.Dst) == 0 {
-		fmt.Printf("src and dst should not be nil\n")
-		return
-	}
-
 	db := database.GetMGRConnection(&mgrinfo, userinfo, true)
 	if db == nil {
 		fmt.Printf("call GetMGRConnection failed, err : %s\n", errors.New("db is nil"))
@@ -48,7 +43,10 @@ func main() {
 
 	switch *arg.Operator {
 	case "create": {
-
+		if len(*arg.Src) == 0 || len(*arg.Dst) == 0 {
+			fmt.Printf("src and dst should not be nil\n")
+			return
+		}
 		err := database.SetATask(db, *arg.Src, *arg.Dst, *arg.Type, *arg.Db)
 		if err != nil {
 			fmt.Printf("call SetATask failed, err : %s\n", errors.New("db is nil"))
