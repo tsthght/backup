@@ -21,7 +21,7 @@ func getLightningBackendArgs(cfg config.BkConfig, host string) ([]string, error)
 
 	//pd
 	args = append(args, "-pd-urls")
-	args = append(args, host)
+	args = append(args, host + ":2379")
 	return args, nil
 }
 
