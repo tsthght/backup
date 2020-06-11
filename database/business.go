@@ -671,20 +671,19 @@ func SetATask(db *sql.DB, src, dst, tp, dt string) error {
 func GetLatestTask(db *sql.DB, src, dst, tp, dt string) (int, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return 0, errors.New("call GetMaxExecuteTime: tx Begin failed: " + err.Error())
+		return 0, errors.New("call GetLatestTask: tx Begin failed: " + err.Error())
 	}
 	rows, err := tx.Query(getlatesttask, src, dst, tp, dt)
 	if err != nil {
-		return 0, errors.New("call GetMaxExecuteTime: tx Query failed: " + err.Error())
+		return 0, errors.New("call GetLatestTask: tx Query failed: " + err.Error())
 	}
-	key := ""
 	value := -1
 	for rows.Next() {
-		err := rows.Scan(&key, &value)
+		err := rows.Scan(&value)
 		if err != nil {
 			rows.Close()
 			tx.Rollback()
-			return 0, errors.New("call GetMaxExecuteTime: tx scan failed: " + err.Error())
+			return 0, errors.New("call GetLatestTask: tx scan failed: " + err.Error())
 		}
 		rows.Close()
 		break
