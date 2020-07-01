@@ -42,7 +42,7 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 					continue
 				}
 			}
-
+/*
 			err, exec := GetMaxExecuteTime(cluster, user, uuid, cfg)
 			if err != nil {
 				fmt.Printf("call GetMaxExecuteTime failed. err : %s\n", err.Error())
@@ -56,8 +56,8 @@ func StateMachineSchema(cluster *database.MGRInfo, user database.UserInfo, cfg c
 				fmt.Printf("call SetMaxExecuteTime failed. err : 5s\n", err.Error())
 				continue
 			}
-
-			err = SetMachineStateByIp(cluster, user, ip, "pre_check")
+*/
+			err := SetMachineStateByIp(cluster, user, ip, "pre_check")
 			if err != nil {
 				fmt.Printf("call SetMachineStateByIp failed. err : %s", err.Error())
 			}
